@@ -50,6 +50,18 @@ These departed from the original specification, each for a documented reason:
   whose topics overlap defer to the `/unity:*` skill by name and contribute only this project's
   conventions.
 
+### Reviewed
+
+A fresh-context agent read only `README.md` and `docs/INSTALL.md` as a newcomer and reported gaps,
+all of which were fixed before release: `PACK/` had no defined resolution on the plugin install
+path, there was no uninstall script, the two install paths were described contradictorily, the
+verification step assumed one of them, PowerShell switches were documented as Bash flags, and the
+glossary terms this project leans on (skill, router, dimension, `design/`, Tier 0) were used
+without ever being defined.
+
+One of its findings was wrong and was not acted on: Homebrew's `unity-cli` cask does ship Linux
+binaries, so "macOS / Linux via Homebrew" was correct.
+
 ### Not yet verified
 
 No part of this release has been executed against a running Unity Editor. Every `unity` command,
