@@ -120,9 +120,8 @@ path is fine.
 
 ### Path A — Claude Code plugin
 
-> **Requires this repo to be published and public on GitHub.** If the commands below report that the
-> repository cannot be found, it is not published yet. Use Path B instead — and if you already have
-> this folder on disk, Path B needs no clone at all, just `./scripts/install.sh`.
+> If you already have this folder on disk, Path B needs no clone at all — just
+> `./scripts/install.sh /path/to/your/game`.
 
 ```
 /plugin install unity-skillforge --marketplace Overcapacity-Studios/unity-skillforge

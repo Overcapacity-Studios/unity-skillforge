@@ -199,15 +199,6 @@ time a client connects — approve it in **Edit → Project Settings → AI**.
 
 ---
 
-## "Repository not found" when installing the plugin
-
-The `/plugin marketplace add` and `git clone` commands need this repo to be published and public on
-GitHub. If it is not published yet, that error is expected and is not something you did wrong — use
-a local clone with `./scripts/install.sh`, which is fully supported and is the only path Codex can
-use anyway.
-
----
-
 ## install.ps1 ignores my flags on Windows
 
 PowerShell uses switches, not POSIX long flags. Use `-DryRun`, `-Symlink`, `-NoAgentsMd` —

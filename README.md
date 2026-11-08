@@ -39,12 +39,8 @@ claims a Play Mode result it did not observe, and never generates art before you
 
 ## Quickstart
 
-> **Already have this folder on disk?** Skip straight to Step 2's second line:
-> `./scripts/install.sh /path/to/your/game`. That is all the install is.
->
-> The `/plugin` and `git clone` commands below need this repo published and public on GitHub. If
-> they report that the repository cannot be found, it is not published yet — running the installer
-> from your existing copy works regardless, and is the same route Codex uses.
+> **Already have this folder on disk?** Skip the clone and run
+> `./scripts/install.sh /path/to/your/game`. That is the whole install.
 
 **Step 1 — connect Unity.** Needed for every path, and free: no Unity AI subscription, no Unity
 Cloud link.
