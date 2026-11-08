@@ -1,0 +1,40 @@
+// Template: ScriptableObject configuration asset
+// Copy to Assets/_Project/Code/Features/<Subject>/__TYPE__.cs
+// Create instances into Assets/_Project/Data/<Category>/ named "<Subject>___TYPE__.asset".
+//
+// RULE: a ScriptableObject is CONFIGURATION. It is read-only at runtime.
+// Mutating one in play mode persists in the Editor and not in a build. Runtime state
+// belongs on a MonoBehaviour or a plain C# object owned by a system.
+using UnityEngine;
+
+namespace __NAMESPACE__
+{
+    /// <summary>Immutable tuning data for __SUBJECT__.</summary>
+    [CreateAssetMenu(menuName = "Game/Data/__TYPE__", fileName = "New__TYPE__")]
+    public sealed class __TYPE__ : ScriptableObject
+    {
+        [Header("Identity")]
+        [SerializeField] private string _displayName = "Unnamed";
+        [SerializeField] private Sprite _icon;
+
+        [Header("Tuning")]
+        [SerializeField, Range(1, 999)] private int _maxHealth = 100;
+        [SerializeField, Min(0f)] private float _moveSpeed = 5f;
+
+        public string DisplayName => _displayName;
+        public Sprite Icon => _icon;
+        public int MaxHealth => _maxHealth;
+        public float MoveSpeed => _moveSpeed;
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            // Catch bad authoring at edit time, where it is cheap to fix.
+            if (string.IsNullOrWhiteSpace(_displayName))
+            {
+                Debug.LogWarning($"{name}: _displayName is empty.", this);
+            }
+        }
+#endif
+    }
+}

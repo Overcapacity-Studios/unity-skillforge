@@ -1,0 +1,60 @@
+// Template: EditMode test
+// Copy to Assets/_Project/Code/Tests/EditMode/<Layer>/__TYPE__Tests.cs
+// Assembly: Game.Core.Tests.asmdef must reference the assembly under test, plus
+// "UnityEngine.TestRunner" and "UnityEditor.TestRunner", with Platforms = Editor only.
+//
+// EditMode tests run without entering play mode: no frames, no physics, no coroutines.
+// Test pure logic here. Anything needing a frame belongs in a PlayMode test.
+using NUnit.Framework;
+
+namespace Game.Core.Tests
+{
+    [TestFixture]
+    public sealed class __TYPE__Tests
+    {
+        private __TYPE__ _subject;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _subject = new __TYPE__();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            // Clear any static state the subject touched, or the next test inherits it.
+            _subject = null;
+        }
+
+        [Test]
+        public void Method_WhenGivenValidInput_ReturnsExpectedResult()
+        {
+            // Arrange
+            const int input = 5;
+
+            // Act
+            int result = _subject.Method(input);
+
+            // Assert — one behaviour per test, named so a failure reads as a sentence.
+            Assert.That(result, Is.EqualTo(10));
+        }
+
+        [TestCase(0, 0)]
+        [TestCase(1, 2)]
+        [TestCase(-1, -2)]
+        public void Method_AcrossBoundaryValues_Doubles(int input, int expected)
+        {
+            Assert.That(_subject.Method(input), Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void Method_WhenGivenNull_Throws()
+        {
+            Assert.Throws<System.ArgumentNullException>(() => _subject.Method(null));
+        }
+    }
+}
+
+// Run with:  unity test --format json
+// Filter:    unity test --format json   (then read the NUnit report it writes)

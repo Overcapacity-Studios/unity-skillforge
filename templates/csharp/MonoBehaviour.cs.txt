@@ -1,0 +1,61 @@
+// Template: MonoBehaviour
+// Copy to Assets/_Project/Code/Features/<Subject>/<TypeName>.cs
+// Replace __NAMESPACE__ and __TYPE__. File name must equal __TYPE__.
+using UnityEngine;
+
+namespace __NAMESPACE__
+{
+    /// <summary>
+    /// One sentence on what this component owns. Delete this line if the name says it.
+    /// </summary>
+    [DisallowMultipleComponent]
+    public sealed class __TYPE__ : MonoBehaviour
+    {
+        [Header("Tuning")]
+        [SerializeField, Min(0f)] private float _moveSpeed = 5f;
+
+        [Header("References")]
+        [SerializeField] private Transform _target;
+
+        private Rigidbody _rigidbody;
+
+        /// <summary>Read-only view of runtime state for other systems.</summary>
+        public bool IsActive { get; private set; }
+
+        private void Awake()
+        {
+            // Self-wiring only: own components, own state.
+            _rigidbody = GetComponent<Rigidbody>();
+
+            // Validate serialized references loudly; a silent null is a setup bug that hides.
+            if (_target == null)
+            {
+                Debug.LogError($"{name}: _target is not assigned.", this);
+            }
+        }
+
+        private void OnEnable()
+        {
+            // Subscribe here. Every subscription must be undone in OnDisable.
+            IsActive = true;
+        }
+
+        private void OnDisable()
+        {
+            // Unsubscribe here, paired with OnEnable.
+            IsActive = false;
+        }
+
+        private void FixedUpdate()
+        {
+            // Physics reads and writes belong here, never in Update.
+            if (_rigidbody == null || _target == null)
+            {
+                return;
+            }
+
+            Vector3 toTarget = _target.position - _rigidbody.position;
+            _rigidbody.linearVelocity = toTarget.normalized * _moveSpeed;
+        }
+    }
+}

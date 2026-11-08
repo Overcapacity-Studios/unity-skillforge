@@ -1,0 +1,88 @@
+// Template: singleton-free service locator
+// Copy to Assets/_Project/Code/Core/Services/
+//
+// Why not a singleton: a `public static Instance` on a MonoBehaviour couples every caller to a
+// concrete type, cannot be substituted in a test, and has undefined lifetime across scene loads.
+// Here, the bootstrap scene is the single composition root that registers services; everything
+// else resolves an interface.
+using System;
+using System.Collections.Generic;
+
+namespace Game.Core.Services
+{
+    /// <summary>Process-wide service registry. Registered only from the composition root.</summary>
+    public static class ServiceLocator
+    {
+        private static readonly Dictionary<Type, object> Services = new();
+
+        /// <summary>Register an implementation for TService. Replacing an existing one throws.</summary>
+        public static void Register<TService>(TService service) where TService : class
+        {
+            if (service == null)
+            {
+                throw new ArgumentNullException(nameof(service));
+            }
+
+            Type key = typeof(TService);
+            if (Services.ContainsKey(key))
+            {
+                throw new InvalidOperationException(
+                    $"ServiceLocator: {key.Name} is already registered. Unregister it first.");
+            }
+
+            Services[key] = service;
+        }
+
+        /// <summary>Resolve a required service. Throws if it was never registered.</summary>
+        public static TService Get<TService>() where TService : class
+        {
+            if (Services.TryGetValue(typeof(TService), out object service))
+            {
+                return (TService)service;
+            }
+
+            throw new InvalidOperationException(
+                $"ServiceLocator: {typeof(TService).Name} is not registered. " +
+                "Register it in the bootstrap scene before anything resolves it.");
+        }
+
+        /// <summary>Resolve an optional service.</summary>
+        public static bool TryGet<TService>(out TService service) where TService : class
+        {
+            if (Services.TryGetValue(typeof(TService), out object found))
+            {
+                service = (TService)found;
+                return true;
+            }
+
+            service = null;
+            return false;
+        }
+
+        public static void Unregister<TService>() where TService : class
+        {
+            Services.Remove(typeof(TService));
+        }
+
+        /// <summary>Clear everything. Call from bootstrap teardown and from test teardown.</summary>
+        public static void Clear()
+        {
+            Services.Clear();
+        }
+    }
+}
+
+// Bootstrap usage (one object in the Bootstrap scene, never unloaded):
+//
+// private void Awake()
+// {
+//     ServiceLocator.Clear();
+//     ServiceLocator.Register<ISaveService>(new JsonSaveService());
+//     ServiceLocator.Register<IAudioService>(_audioService);
+// }
+// private void OnDestroy() => ServiceLocator.Clear();
+//
+// Consumer usage (resolve in Start, not Awake — registration order matters):
+//
+// private ISaveService _save;
+// private void Start() => _save = ServiceLocator.Get<ISaveService>();

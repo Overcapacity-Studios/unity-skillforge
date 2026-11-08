@@ -1,0 +1,132 @@
+// Template: lightweight state machine
+// Copy to Assets/_Project/Code/Core/StateMachines/
+//
+// Use this the moment a behaviour has more than two states. A pile of booleans becomes
+// unreadable at three states and wrong at four.
+using System;
+using System.Collections.Generic;
+
+namespace Game.Core.StateMachines
+{
+    /// <summary>One state. Implement only what the state needs; empty methods are free here.</summary>
+    public interface IState
+    {
+        void Enter();
+        void Tick(float deltaTime);
+        void FixedTick(float fixedDeltaTime);
+        void Exit();
+    }
+
+    /// <summary>Convenience base so a state only overrides what it uses.</summary>
+    public abstract class StateBase : IState
+    {
+        public virtual void Enter() { }
+        public virtual void Tick(float deltaTime) { }
+        public virtual void FixedTick(float fixedDeltaTime) { }
+        public virtual void Exit() { }
+    }
+
+    /// <summary>
+    /// Plain C# state machine, no MonoBehaviour. Drive it from the owning component's
+    /// Update and FixedUpdate. Transitions are declared up front, not scattered in states.
+    /// </summary>
+    public sealed class StateMachine
+    {
+        private readonly List<Transition> _transitions = new();
+        private readonly List<Transition> _anyTransitions = new();
+
+        public IState Current { get; private set; }
+
+        /// <summary>Set the starting state. Call once, after adding transitions.</summary>
+        public void SetState(IState state)
+        {
+            if (ReferenceEquals(state, Current))
+            {
+                return;
+            }
+
+            Current?.Exit();
+            Current = state;
+            Current?.Enter();
+        }
+
+        /// <summary>Allow from -> to when condition is true.</summary>
+        public void AddTransition(IState from, IState to, Func<bool> condition)
+        {
+            _transitions.Add(new Transition(from, to, condition));
+        }
+
+        /// <summary>Allow any state -> to when condition is true. Checked first, in order added.</summary>
+        public void AddAnyTransition(IState to, Func<bool> condition)
+        {
+            _anyTransitions.Add(new Transition(null, to, condition));
+        }
+
+        public void Tick(float deltaTime)
+        {
+            Transition next = GetTransition();
+            if (next != null)
+            {
+                SetState(next.To);
+            }
+
+            Current?.Tick(deltaTime);
+        }
+
+        public void FixedTick(float fixedDeltaTime)
+        {
+            Current?.FixedTick(fixedDeltaTime);
+        }
+
+        private Transition GetTransition()
+        {
+            foreach (Transition transition in _anyTransitions)
+            {
+                if (transition.Condition())
+                {
+                    return transition;
+                }
+            }
+
+            foreach (Transition transition in _transitions)
+            {
+                if (ReferenceEquals(transition.From, Current) && transition.Condition())
+                {
+                    return transition;
+                }
+            }
+
+            return null;
+        }
+
+        private sealed class Transition
+        {
+            public Transition(IState from, IState to, Func<bool> condition)
+            {
+                From = from;
+                To = to;
+                Condition = condition;
+            }
+
+            public IState From { get; }
+            public IState To { get; }
+            public Func<bool> Condition { get; }
+        }
+    }
+}
+
+// Owner usage:
+//
+// private StateMachine _machine;
+// private void Awake()
+// {
+//     _machine = new StateMachine();
+//     var idle = new IdleState(this);
+//     var run  = new RunState(this);
+//     _machine.AddTransition(idle, run, () => _moveInput.sqrMagnitude > 0.01f);
+//     _machine.AddTransition(run, idle, () => _moveInput.sqrMagnitude <= 0.01f);
+//     _machine.AddAnyTransition(new DeadState(this), () => _health <= 0);
+//     _machine.SetState(idle);
+// }
+// private void Update()      => _machine.Tick(Time.deltaTime);
+// private void FixedUpdate() => _machine.FixedTick(Time.fixedDeltaTime);

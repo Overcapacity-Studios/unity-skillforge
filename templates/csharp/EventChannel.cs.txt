@@ -1,0 +1,64 @@
+// Template: ScriptableObject event channel
+// Copy to Assets/_Project/Code/Core/Events/
+// Create instances into Assets/_Project/Data/EventChannels/ e.g. "PlayerDied_EventChannel.asset".
+//
+// Why: two features must never reference each other. They both reference a channel asset.
+// The raiser does not know who listens; the listener does not know who raised.
+using System;
+using UnityEngine;
+
+namespace Game.Core.Events
+{
+    /// <summary>Base class for a ScriptableObject event channel carrying a payload of T.</summary>
+    public abstract class EventChannel<T> : ScriptableObject
+    {
+        private event Action<T> Raised;
+
+        /// <summary>Raise the event. Safe to call with no listeners.</summary>
+        public void Raise(T value)
+        {
+            Raised?.Invoke(value);
+        }
+
+        /// <summary>Subscribe. Call from OnEnable and always pair with Unregister in OnDisable.</summary>
+        public void Register(Action<T> listener)
+        {
+            Raised += listener;
+        }
+
+        /// <summary>Unsubscribe. An unpaired Register leaks and fires on destroyed objects.</summary>
+        public void Unregister(Action<T> listener)
+        {
+            Raised -= listener;
+        }
+
+        private void OnDisable()
+        {
+            // Domain reload in the Editor can leave stale delegates on the asset. Clear them.
+            Raised = null;
+        }
+    }
+
+    /// <summary>An event with no payload.</summary>
+    [CreateAssetMenu(menuName = "Game/Events/Void Event Channel", fileName = "New_EventChannel")]
+    public sealed class VoidEventChannel : EventChannel<Empty>
+    {
+        public void Raise() => Raise(default);
+    }
+
+    /// <summary>Placeholder payload for a void channel.</summary>
+    public readonly struct Empty { }
+
+    [CreateAssetMenu(menuName = "Game/Events/Int Event Channel", fileName = "NewInt_EventChannel")]
+    public sealed class IntEventChannel : EventChannel<int> { }
+
+    [CreateAssetMenu(menuName = "Game/Events/Float Event Channel", fileName = "NewFloat_EventChannel")]
+    public sealed class FloatEventChannel : EventChannel<float> { }
+}
+
+// Listener usage:
+//
+// [SerializeField] private IntEventChannel _healthChanged;
+// private void OnEnable()  => _healthChanged.Register(OnHealthChanged);
+// private void OnDisable() => _healthChanged.Unregister(OnHealthChanged);
+// private void OnHealthChanged(int value) { /* ... */ }

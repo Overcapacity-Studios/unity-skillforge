@@ -1,0 +1,75 @@
+// Template: PlayMode test
+// Copy to Assets/_Project/Code/Tests/PlayMode/<Subject>/__TYPE__PlayTests.cs
+// Assembly: Game.Features.PlayTests.asmdef references the assembly under test plus
+// "UnityEngine.TestRunner"; Platforms = Any.
+//
+// PlayMode tests enter play mode, so frames advance, physics runs and coroutines work.
+// They are much slower than EditMode tests — use them only where a frame is genuinely needed.
+using System.Collections;
+using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.TestTools;
+
+namespace Game.Features.PlayTests
+{
+    [TestFixture]
+    public sealed class __TYPE__PlayTests
+    {
+        private GameObject _subjectObject;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _subjectObject = new GameObject(nameof(__TYPE__));
+            _subjectObject.AddComponent<__TYPE__>();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            // Every object created in a PlayMode test must be destroyed, or it leaks into the
+            // next test in the same play session.
+            if (_subjectObject != null)
+            {
+                Object.Destroy(_subjectObject);
+                _subjectObject = null;
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator Subject_AfterOneFrame_IsInitialised()
+        {
+            yield return null; // let Awake and Start run
+
+            __TYPE__ subject = _subjectObject.GetComponent<__TYPE__>();
+            Assert.That(subject.IsActive, Is.True);
+        }
+
+        [UnityTest]
+        public IEnumerator Rigidbody_AfterFixedSteps_MovesTowardTarget()
+        {
+            var body = _subjectObject.AddComponent<Rigidbody>();
+            body.useGravity = false;
+            Vector3 start = body.position;
+
+            // Advance physics deterministically rather than waiting on wall-clock time.
+            for (int i = 0; i < 10; i++)
+            {
+                yield return new WaitForFixedUpdate();
+            }
+
+            Assert.That(body.position, Is.Not.EqualTo(start));
+        }
+
+        [UnityTest]
+        public IEnumerator Action_WhenItFails_LogsAnError()
+        {
+            // Assert on an expected log instead of letting it fail the test run.
+            LogAssert.Expect(LogType.Error, new System.Text.RegularExpressions.Regex("_target is not assigned"));
+            yield return null;
+        }
+    }
+}
+
+// Run with:  unity test --format json
+// Fast loop: unity watch test   (re-runs unity test --affected on change)
