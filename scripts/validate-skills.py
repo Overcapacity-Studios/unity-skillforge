@@ -56,8 +56,48 @@ def fail(where: str, message: str) -> None:
     problems.append(f"{where}: {message}")
 
 
+YAML_RESERVED = set("-?:,[]{}#&*!|>'\"%@`")
+
+
+def check_yaml_hazards(where: str, block: str) -> None:
+    """Catch frontmatter that a real YAML parser would reject or misread.
+
+    Agents parse frontmatter with a real YAML parser and silently DROP a skill
+    whose frontmatter fails, with nothing in any log. The parser in this script
+    is deliberately permissive, so these checks stand in for the strict one.
+    """
+    for number, line in enumerate(block.splitlines(), start=2):
+        if "\t" in line:
+            fail(where, f"line {number}: tab character — YAML forbids tabs for indentation")
+        if not line.strip():
+            continue
+        match = re.match(r"(\s*)([A-Za-z0-9_-]+):\s*(.*)$", line)
+        if not match:
+            continue  # already reported by the parser
+        value = match.group(3).strip()
+        if not value:
+            continue
+        quoted = len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'"
+        if quoted:
+            continue
+        if value[0] in YAML_RESERVED:
+            fail(where, f"line {number}: unquoted value starts with the reserved YAML indicator "
+                        f"{value[0]!r}; quote it")
+        if ": " in value:
+            fail(where, f"line {number}: unquoted value contains ': ' — YAML reads that as a nested "
+                        "mapping; quote it")
+        if value.endswith(":"):
+            fail(where, f"line {number}: unquoted value ends with ':'; quote it")
+        if " #" in value:
+            fail(where, f"line {number}: unquoted value contains ' #' — YAML treats the rest as a "
+                        "comment; quote it")
+
+
 def split_frontmatter(path: str, text: str) -> dict[str, object] | None:
     """Return the parsed frontmatter mapping, or None after recording a problem."""
+    if text.startswith("\ufeff"):
+        fail(path, "file starts with a UTF-8 BOM, so the frontmatter is not recognised")
+        return None
     if not text.startswith("---\n"):
         fail(path, "frontmatter must start with '---' as the very first line")
         return None
@@ -65,6 +105,7 @@ def split_frontmatter(path: str, text: str) -> dict[str, object] | None:
     if end == -1:
         fail(path, "frontmatter block is not closed with '---'")
         return None
+    check_yaml_hazards(path, text[4:end + 1])
 
     data: dict[str, object] = {}
     current_block: str | None = None
