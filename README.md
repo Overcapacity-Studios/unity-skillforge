@@ -39,9 +39,6 @@ claims a Play Mode result it did not observe, and never generates art before you
 
 ## Quickstart
 
-> **Already have this folder on disk?** Skip the clone and run
-> `./scripts/install.sh /path/to/your/game`. That is the whole install.
-
 **Step 1 — connect Unity.** Needed for every path, and free: no Unity AI subscription, no Unity
 Cloud link.
 
@@ -59,23 +56,52 @@ unity status               # should list your Editor. If it does, you are connec
 The Unity CLI is currently **beta** (`1.0.0-beta.x`) and Unity labels it experimental;
 `unity --help` is authoritative for your installed version.
 
-**Step 2 — install the pack.** Any one of these.
+**Step 2 — install the pack.** Three routes. Pick by what you want:
 
-**`npx skills`** — quickest, and the way to cherry-pick:
+| | `npx skills` | Installer | Claude Code plugin |
+| --- | --- | --- | --- |
+| Agents supported | Claude Code, Codex, ~70 more | Claude Code, Codex | Claude Code |
+| Take just one skill | **yes** | no | no |
+| Always-on rules (`AGENTS.md`) | no | **yes** | no |
+| The 6 subagents | no | **yes** | yes |
+| Creates `design/STATE.md` | no | **yes** | no |
+| Update later | `npx skills update` | re-run it | `/plugin marketplace update` |
+
+### `npx skills` — quickest, and the only way to cherry-pick
 
 ```bash
-npx skills add Overcapacity-Studios/unity-skillforge --all          # everything
-npx skills add Overcapacity-Studios/unity-skillforge -l             # just list what is in it
+# Everything, into this project
+npx skills add Overcapacity-Studios/unity-skillforge --all
+
+# See what is in it before installing anything
+npx skills add Overcapacity-Studios/unity-skillforge -l
+
+# A few skills, for one agent
 npx skills add Overcapacity-Studios/unity-skillforge \
-  -s 25d-sorting-and-depth -s unity-game-router -a claude-code      # pick skills and agents
+  -s unity-skillforge-pack -s unity-game-router -s 25d-sorting-and-depth \
+  -a claude-code
+
+# Globally (user-level) instead of per-project
+npx skills add Overcapacity-Studios/unity-skillforge --all -g -a claude-code
 ```
 
-Installs to `.claude/skills/` and `.agents/skills/` and writes a `skills-lock.json`. Repeat `-a`
-and `-s` rather than comma-joining them. Always include **`unity-skillforge-pack`** (or use
-`--all`): it carries the rules, references and templates every other skill reads, and without it
-those references dangle.
+> **Always include `unity-skillforge-pack`, or use `--all`.**
+> The CLI copies each skill's own folder and nothing else, and that package is how the shared
+> rules, references and templates travel. Leave it out and every `PACK/...` path in the other
+> skills points at nothing — the skills load, but the files they tell the agent to read are
+> missing.
 
-**Installer** — the full pack, including the always-loaded rules and the `design/` contract:
+Notes that save a retry:
+
+- **Repeat `-s` and `-a`.** `-a claude-code,codex` is rejected; `-a claude-code -a codex` works.
+- Installs to `.claude/skills/` and `.agents/skills/`, and writes `skills-lock.json`.
+- `--copy` copies instead of symlinking. `-y` skips prompts. `--json` for scripting.
+- Later: `npx skills list`, `npx skills update`, `npx skills remove`.
+
+Afterwards, open each session with *"Use the unity-game-router skill"* — it carries the hard rules
+that this route does not install, and it creates `design/` on its first run.
+
+### Installer — the full pack, rules included
 
 ```bash
 # macOS / Linux. Skip the clone if you already have this folder.
@@ -89,22 +115,30 @@ cd unity-skillforge
 .\scripts\install.ps1 C:\dev\MyGame
 ```
 
-<details>
-<summary>Claude Code plugin</summary>
+This is the only route that also writes `AGENTS.md` (loaded automatically every task), the six
+subagents, and the `design/` contract. It never overwrites an existing `AGENTS.md`, `CLAUDE.md`,
+`design/` file or anything in `Assets/`, and re-running it is safe.
+
+### Claude Code plugin
 
 ```
 /plugin install unity-skillforge --marketplace Overcapacity-Studios/unity-skillforge
 ```
 
-On Claude Code older than 2.1.275:
-`/plugin marketplace add Overcapacity-Studios/unity-skillforge` then
-`/plugin install unity-skillforge@unity-skillforge`.
+<details>
+<summary>On Claude Code older than 2.1.275</summary>
+
+```
+/plugin marketplace add Overcapacity-Studios/unity-skillforge
+/plugin install unity-skillforge@unity-skillforge
+```
 </details>
 
-**Which one?** The installer is the only route that also gives you the always-on rules
-(`AGENTS.md`) and creates `design/STATE.md`. With `npx skills` or the plugin, open each session
-with *"Use the unity-game-router skill"*, which carries the same rules. Running more than one is
-fine.
+Ships the skills and subagents but not the always-on rules, since Claude Code does not load a
+plugin's `AGENTS.md`. Open each session with *"Use the unity-game-router skill"*.
+
+Running more than one route is fine — use the plugin or `npx` for the skills and the installer for
+the rules, if you want both.
 
 **Step 3 — your first prompt.** Literally type this:
 
