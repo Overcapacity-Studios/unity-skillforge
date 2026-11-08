@@ -62,6 +62,19 @@ without ever being defined.
 One of its findings was wrong and was not acted on: Homebrew's `unity-cli` cask does ship Linux
 binaries, so "macOS / Linux via Homebrew" was correct.
 
+A second round ran a real install and uninstall and found two code bugs — `install.sh` skipped
+`design/STATE.md` whenever a `design/` folder already existed, and `uninstall.sh` left behind the
+section it had appended to an existing `AGENTS.md`, pointing at a directory it had just deleted.
+
+A third audit checked `USAGE.md`, `ARCHITECTURE.md`, `CODEX.md` and `TROUBLESHOOTING.md` against the
+repo and against Anthropic's and OpenAI's published documentation. It found the Codex role-file path
+dangled (nothing installed `agents/` where `CODEX.md` said to look), the validator claimed to
+enforce seven skill sections while checking six, and several rationale claims in `ARCHITECTURE.md`
+were stated more confidently than the sources support — notably that a plugin-root `AGENTS.md` is
+not loaded (the `CLAUDE.md` half is documented; the `AGENTS.md` half is an assumption), that extra
+frontmatter keys are a hard error, and that the angle-bracket rule comes from Anthropic rather than
+from Unity's CI. All are corrected or hedged to match the evidence.
+
 ### Not yet verified
 
 No part of this release has been executed against a running Unity Editor. Every `unity` command,

@@ -194,7 +194,8 @@ your-game/
   .claude/skills/<33 skills>      # Claude Code
   .claude/agents/<6 agents>       # Claude Code subagents
   .agents/skills/<33 skills>      # Codex  (NOT .codex/skills)
-  .unity-skillforge/              # the read-by-path tier: references, rules, templates, scripts, docs
+  .unity-skillforge/              # the read-by-path tier: references, rules, templates, scripts,
+                                  # docs, and the six agent role files (Codex reads them from here)
   .unity-skillforge/AGENTS.md     # the rules file your AGENTS.md points at
   AGENTS.md                       # Tier 0 rules (appended to, never overwritten)
   CLAUDE.md                       # contains only @AGENTS.md

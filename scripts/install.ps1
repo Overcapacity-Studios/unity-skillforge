@@ -108,7 +108,7 @@ Write-Host ""
 $PackDir = Join-Path $Target '.unity-skillforge'
 Write-Host "Tier 2 (read by path) -> $PackDir"
 New-Dir $PackDir
-foreach ($dir in @('references', 'rules', 'templates', 'scripts', 'docs')) {
+foreach ($dir in @('references', 'rules', 'templates', 'scripts', 'docs', 'agents')) {
   $source = Join-Path $PackRoot $dir
   if (Test-Path -LiteralPath $source) {
     Copy-Entry $source (Join-Path $PackDir $dir) $true

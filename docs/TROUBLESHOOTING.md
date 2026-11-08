@@ -125,9 +125,12 @@ Or disable packs you are not using.
 
 **Symptom:** the agent reads the whole repo, uses legacy `Input`, or skips the design docs.
 
-**On the plugin install path, this is expected.** Claude Code does not load a plugin's `AGENTS.md`
-or `CLAUDE.md`. Either start with **"Use the unity-game-router skill"**, which carries the same
-rules, or install with `./scripts/install.sh` so `AGENTS.md` loads automatically.
+**On the plugin install path, this is expected** — a plugin ships skills and nothing else, so Tier 0
+never loads. Two remedies: start each session with **"Use the unity-game-router skill"**, which
+carries the same hard rules and routing table, or run `./scripts/install.sh` so `AGENTS.md` loads
+automatically. The second also creates `design/STATE.md`, whose absence on the plugin path is the
+other thing people notice — the router handles it by routing you to `design-write-gdd`, which is a
+first prompt rather than a failure.
 
 **On Codex:** `AGENTS.md` is read **once at session start** — restart after editing it. And a file
 closer to your working directory **overrides** one further up, so a stale `AGENTS.md` in a
@@ -203,19 +206,14 @@ GitHub. If it is not published yet, that error is expected and is not something 
 a local clone with `./scripts/install.sh`, which is fully supported and is the only path Codex can
 use anyway.
 
-## Skills work but the rules are ignored, on a plugin install
-
-Expected on the plugin path. Claude Code does not load a plugin's `AGENTS.md` or `CLAUDE.md`, so
-Tier 0 is not loaded. Either open each session with **"Use the unity-game-router skill"**, which
-carries the same rules, or also run `./scripts/install.sh` so `AGENTS.md` loads automatically.
-
-Related: on that path there is no `design/` folder either. The router handles that by routing you to
-`design-write-gdd` — a first prompt, not a failure.
+---
 
 ## install.ps1 ignores my flags on Windows
 
 PowerShell uses switches, not POSIX long flags. Use `-DryRun`, `-Symlink`, `-NoAgentsMd` —
 `--dry-run` is parsed as a positional argument and silently ignored or misbound.
+
+---
 
 ## How do I remove it?
 
@@ -226,6 +224,8 @@ PowerShell uses switches, not POSIX long flags. Use `-DryRun`, `-Symlink`, `-NoA
 
 Removes only the skills and agents this pack owns plus `.unity-skillforge/`; your own skills,
 `design/` and `Assets/` are untouched. It prints what it deliberately left behind.
+
+---
 
 ## Still stuck
 

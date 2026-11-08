@@ -112,6 +112,14 @@ jobs:
           print(f"ok: {checked} PACK references resolve")
           PY
 
+      - name: Codex role files land where CODEX.md says they do
+        run: |
+          set -euo pipefail
+          for role in designer architect gameplay-coder asset-producer qa reviewer; do
+            test -f "/tmp/game/.unity-skillforge/agents/$role.md"
+          done
+          echo "ok: all six role files present at .unity-skillforge/agents/"
+
       - name: design/ files are created per file, not per directory
         run: |
           set -euo pipefail

@@ -61,7 +61,7 @@ echo
 PACK_DIR="$TARGET/.unity-skillforge"
 echo "Tier 2 (read by path) -> $PACK_DIR"
 run mkdir -p "$PACK_DIR"
-for dir in references rules templates scripts; do
+for dir in references rules templates scripts agents; do
   if [[ -e "$PACK_DIR/$dir" || -L "$PACK_DIR/$dir" ]]; then run rm -rf "$PACK_DIR/$dir"; fi
   if [[ "$MODE" == "symlink" ]]; then
     run ln -s "$PACK_ROOT/$dir" "$PACK_DIR/$dir"

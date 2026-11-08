@@ -88,8 +88,12 @@ failure, and so does the skill.
 
 > **Prompt:** "Enemies walk through walls."
 
-Describe the symptom, not a guess at the cause. The router picks the skill — here `3d-navmesh-ai`,
-where a stale NavMesh is the usual answer. For 2.5D draw-order problems it is `25d-sorting-and-depth`.
+Describe the symptom, not a guess at the cause, and let the router disambiguate. This particular
+symptom is genuinely ambiguous: if the enemies are *pathing* through a wall that exists, it is a
+stale NavMesh (`3d-navmesh-ai`); if they are *passing through* a collider that should stop them, it
+is collision, which Unity's own `/unity:fix-3d-physics-collisions` owns. Saying which one you see —
+"they walk a straight line through the wall" versus "they slide through it when pushed" — picks the
+right skill immediately. For 2.5D draw-order problems it is `25d-sorting-and-depth`.
 
 ## Workflow: build
 
@@ -126,8 +130,12 @@ report, and ranks findings as blocking, should-fix or nit. It reports; it does n
 > **Prompt:** "Use the designer agent to spec the grapple hook."
 
 Each one reads only `design/STATE.md` and `design/INDEX.md` to start, and ends in a fixed handoff
-format naming what it wrote, what it verified, and the next skill. Codex has no subagent directory —
-[CODEX.md](CODEX.md) ships the same six as copy-paste prompts.
+format naming what it wrote, what it verified, and where the work goes next — the next skill for the
+building roles, "hand back to" for `qa` and `reviewer`.
+
+Codex has no subagent directory. `install.sh` copies the six role files to
+`.unity-skillforge/agents/`, and [CODEX.md](CODEX.md) gives a one-line prompt for each that points
+at them.
 
 ## Habits that keep it working
 

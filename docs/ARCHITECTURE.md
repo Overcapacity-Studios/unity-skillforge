@@ -9,9 +9,14 @@ smallest amount of text that lets it do the task correctly.**
 
 | Tier | What | When it loads | Budget |
 | --- | --- | --- | --- |
-| **0** | `AGENTS.md`, or the `unity-game-router` skill | Always | ≤ 150 lines |
+| **0** | `AGENTS.md` | Automatically, every task — **on the `install.sh` path only** | ≤ 150 lines |
+| **0** | the `unity-game-router` skill | On the plugin path, where `AGENTS.md` is not loaded: invoked explicitly, usually once per session | ≤ 200 lines (it is a skill) |
+| **0** | `design/STATE.md` + `design/INDEX.md` | Every task, by rule — they live in the *game* repo, not the pack | STATE.md ≤ 60 lines |
 | **1** | One `SKILL.md` | When the task matches its description | ≤ 200 lines |
-| **2** | `references/`, `rules/`, `templates/`, the game's `design/` | Only by exact path, named in a skill | unbounded |
+| **2** | `references/`, `rules/`, `templates/`, the rest of `design/` | Only by exact path, named in a skill | unbounded |
+
+The two Tier 0 rows for the pack are alternatives, not both: which one applies depends on how the
+pack was installed. See "Two Tier-0 paths" below.
 
 Skill **descriptions sit in context permanently**, for every skill installed. That is why they are
 capped at 300 characters and written to say when the skill does *and does not* apply. Claude Code
@@ -26,15 +31,18 @@ it the most expensive file in a game project per token.
 The spec this repo was built from asked for `skills/core/`, `skills/2d/`, `skills/2_5d/`. That does
 not work:
 
-- Claude Code documents only `<skills-root>/<name>/SKILL.md`. Its plugin manifest defines a scan
-  root as *"a directory of `<name>/SKILL.md` folders"* — direct children only.
-- Recursion **is** documented for `agents/` and `commands/`, with explicit name-mangling rules. No
-  such statement exists for `skills/`.
-- Unity's own plugin CI requires frontmatter `name` to equal the **direct** folder name under
-  `skills/`.
-- Empirically, across every plugin installed on the machine this was built on, zero skills were
-  nested.
-- Codex documents `.agents/skills` without stating a scan depth, and its examples are flat too.
+- Claude Code's plugin manifest defines a skills scan root as *"a directory of `<name>/SKILL.md`
+  folders"* — direct children only.
+- Recursion **is** documented for `agents/` and `commands/`, with explicit name-mangling rules
+  (`agents/review/security.md` becomes `plugin:review:security`). No equivalent statement exists
+  anywhere for `skills/`, and without a naming rule a nested skill has no addressable name.
+- Codex documents `.agents/skills` being scanned in each directory from the working directory up to
+  the repo root, with each skill as `<name>/SKILL.md` — again, direct children.
+
+Note the one place nesting *is* supported, since it is easy to confuse: Claude Code loads
+`<subdir>/.claude/skills/<name>/SKILL.md` for sessions started in or below `<subdir>`. That nests
+the **skills root**, not the skills within it. `skills/core/unity-script/SKILL.md` is still
+unaddressable.
 
 So grouping lives in the **name prefix** — `core-`, `2d-`, `25d-`, `3d-`, `assets-`, `qa-`,
 `design-` — and in the routing table. Prefixes also keep our names from colliding with Unity's
@@ -48,19 +56,26 @@ or `.agents/skills/`. Flat works everywhere.
 
 Skill frontmatter is limited to `name`, `description` and `metadata`.
 
-Claude Code accepts many more keys. But outside Claude Code — claude.ai uploads, the Skills API —
-**only** `name`, `description`, `license`, `compatibility`, `metadata` and `allowed-tools` are
-permitted, and *any other key is a hard error*. Codex requires exactly `name` and `description`.
-Restricting to the intersection is what makes one tree load in both tools. The validator enforces it.
+Claude Code accepts many more keys. The portable set — the one the Agent Skills spec defines, and
+all that is accepted outside Claude Code for claude.ai uploads and the Skills API — is `name`,
+`description`, `license`, `compatibility`, `metadata` and `allowed-tools`. Anything beyond it risks
+rejection there. Codex's docs say a `SKILL.md` **must include** `name` and `description`; that is a
+minimum, not a maximum, which is why `metadata` is safe to add. Restricting to the portable set is
+what makes one tree load in both tools, and the validator enforces it.
 
-Two further rules come from the Claude Code plugin directory's scan: a description may not contain
-angle brackets, and the root `README.md` must be at least 40 words.
+Two further rules are inherited from **Unity's own plugin CI**, which enforces them citing the
+Claude Code plugin directory's submission scan: a description should avoid angle brackets, and the
+root `README.md` should be at least 40 words. Anthropic's published docs say only that `<` and `>`
+in a description are escaped for display, so treat the angle-bracket rule as defensive rather than
+load-bearing — it costs nothing, and descriptions read better without them.
 
 ## Two Tier-0 paths, one table
 
-**Claude Code does not load a plugin's `AGENTS.md` or `CLAUDE.md`.** Its docs are explicit: *"To
-include instructions in a plugin, write them as a skill."* So Tier 0 depends on how the pack was
-installed:
+**Claude Code does not load a plugin's `CLAUDE.md`.** Its docs are explicit: *"To include
+instructions in a plugin, write them as a skill,"* and `claude plugin validate` warns about a
+plugin-root `CLAUDE.md` by name. A plugin-root `AGENTS.md` is **not documented either way** — we
+assume it is not loaded, because nothing says it is, and designing around the safer assumption costs
+one skill. So Tier 0 depends on how the pack was installed:
 
 | Install path | Tier 0 |
 | --- | --- |
@@ -101,8 +116,11 @@ guarantees it and the validator checks every cited path exists.
 ## Why the Unity CLI, not MCP
 
 Unity deprecated the in-Editor MCP server in `com.unity.ai.assistant`. Its replacement is the Unity
-CLI plus the Pipeline package. Unity's own docs say `unity command` and `unity eval` are *"faster
-and use fewer tokens than MCP"* and should be used by any agent that can run shell commands.
+CLI plus the Pipeline package. Unity's migration page says direct Editor commands are *"faster and
+use fewer tokens than MCP"* and should be used by any agent that can run shell commands. (That page
+names them `unity command` and `unity eval`; the CLI command reference lists `unity command` but no
+`unity eval`, and the attested mechanism for running C# is the Pipeline package's `script eval` /
+`eval_file`. Unity's docs are inconsistent here — discover the real surface with `unity list`.)
 
 The CLI's **own** MCP mode (`unity mcp configure`) is not deprecated and remains the fallback for
 agents that cannot shell out.
@@ -129,8 +147,10 @@ documentation. The cost is real: those 13 need review whenever Unity updates the
 
 Claude Code's subagent frontmatter has a `skills:` key, but it **injects full skill content**, not
 just descriptions. Preloading five skills into six agents would defeat the entire tiering. Instead
-each agent lists its allowed skills in its body and invokes them through the Skill tool, which is
-available to subagents by default.
+each agent lists its allowed skills in prose in its body and invokes them through the `Skill` tool.
+Note that every agent here sets an explicit `tools:` allowlist, and an allowlist replaces the
+default set — so each one lists `Skill` explicitly. Dropping `Skill` from an agent's `tools:` would
+silently stop it using any skill at all.
 
 Agent frontmatter also has a trap: Claude Code **ignores an unrecognised agent field without
 reporting an error**. A typo fails silently. The validator therefore allowlists agent keys, and
@@ -147,7 +167,8 @@ rules/                 Tier 2: C# style, architecture, folders, performance
 references/            Tier 2: Unity CLI, versions, official skills, URP, input, Meshy, MCP
 templates/csharp/      copy-ready .cs.txt
 templates/game-design/ the design/ contract
-scripts/               validate-skills.py, install.sh/.ps1, sync-agents-dir.sh, slice-spritesheet.py
+scripts/               validate-skills.py, install.sh/.ps1, uninstall.sh, sync-agents-dir.sh,
+                       slice-spritesheet.py
 .claude-plugin/        plugin.json + marketplace.json (repo is both)
 .codex-plugin/         plugin.json
 .agents/plugins/       marketplace.json (Codex)
@@ -156,7 +177,10 @@ docs/  examples/
 
 The repo is simultaneously a marketplace and the single plugin it lists (`"source": "./"`), which is
 supported and is what Unity's own plugin repo does. The marketplace entry deliberately omits a
-`skills` key: listing one there would stop the default `skills/` directory being scanned.
+`skills` key. For an entry whose `source` is the marketplace root — as ours is — listing specific
+skills subdirectories there means **only those** load and the plugin's default `skills/` directory
+is not scanned at all. A `skills` key in `plugin.json` behaves differently: it *adds to* the default
+scan.
 
 ## Skill file contract
 
@@ -164,6 +188,8 @@ Every `SKILL.md` has these sections, in this order, enforced by the validator:
 
 **When to use · Inputs needed · Steps · Unity CLI commands used · Files to read (exact paths) ·
 Done checklist · Common mistakes**
+
+All seven are checked for presence *and* order.
 
 Plus `## Prefer the official skill` where the overlap rule applies. Steps are numbered and
 imperative. Concrete code appears only where no template covers it — the rule is *copy a template,

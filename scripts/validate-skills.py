@@ -40,6 +40,7 @@ SKILL_SECTIONS = [
     "## When to use",
     "## Inputs needed",
     "## Steps",
+    "## Unity CLI commands used",
     "## Files to read (exact paths)",
     "## Done checklist",
     "## Common mistakes",
@@ -222,7 +223,8 @@ def validate_skills() -> set[str]:
             if len(desc) > MAX_DESCRIPTION_CHARS:
                 fail(rel, f"description is {len(desc)} chars, limit is {MAX_DESCRIPTION_CHARS}")
             if "<" in desc or ">" in desc:
-                fail(rel, "description contains angle brackets; the plugin directory scan rejects them")
+                fail(rel, "description contains angle brackets; avoid them — Unity's plugin CI "
+                          "rejects them, and Claude Code escapes them for display")
 
         # Required sections, present and in order.
         positions = []

@@ -24,8 +24,12 @@ Scope of the deprecation:
 | `unity mcp` / `unity command` in the Unity CLI | No — "remains fully supported" |
 | A third-party MCP package installed from GitHub | No |
 
-Unity also states the direct commands are cheaper: `unity command` and `unity eval` are *"faster and
-use fewer tokens than MCP. Use these commands if your agent can run shell commands."* MCP mode
+Unity also states the direct commands are cheaper. Its migration page says they are *"faster and
+use fewer tokens than MCP. Use these commands if your agent can run shell commands,"* and names
+them `unity command` and `unity eval`. **Note the inconsistency:** that page names `unity eval`, but
+the CLI command reference does not list such a command — the attested way to run C# is the Pipeline
+package's `script eval` / `eval_file` (below), and `unity run --command` for a registered Editor
+command. Discover what your install actually has with `unity commands --format json`. MCP mode
 exists for agents that cannot run arbitrary shell commands.
 
 **Licensing:** *"The CLI is free and separate from Unity AI. Installing the CLI doesn't require a

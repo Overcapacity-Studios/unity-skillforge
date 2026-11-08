@@ -15,13 +15,14 @@ cd unity-skillforge
 That writes `.agents/skills/<33 skills>`, the `.unity-skillforge/` Tier-2 tree, and a root
 `AGENTS.md`.
 
-Where Codex looks for skills, in full:
+Where Codex looks for skills:
 
 | Scope | Path |
 | --- | --- |
 | Repo | `.agents/skills` — scanned in every directory from your CWD up to the repo root |
 | User | `~/.agents/skills` |
 | Admin | `/etc/codex/skills` |
+| System | Skills bundled with Codex itself, such as `skill-creator` and `skill-installer` |
 
 **`~/.codex/skills` is not a skills path.** Guides that say otherwise are out of date. The only
 `.codex` paths that matter are `~/.codex/config.toml` and a trusted project's `.codex/config.toml`.
@@ -58,7 +59,7 @@ overwriting it, so your own rules survive and still load.
 | Model | Slug | Use it for |
 | --- | --- | --- |
 | **GPT-6.1 Sol** | `gpt-6.1-sol` | Design, architecture, review — the decisions that are expensive to reverse. Near-flagship capability, 500k default context |
-| **GPT-6.1 Terra** | `gpt-6.1-terra` | Implementation, asset production, QA. Fast and efficient. Needs Codex CLI 0.159.0+ |
+| **GPT-6.1 Terra** | `gpt-6.1-terra` | Implementation, asset production, QA. Fast and efficient. Recent Codex CLI builds only — if it is not offered, update the CLI |
 | GPT-6 Astra | `gpt-6-astra` | A genuinely hard architectural problem, or a debugging session that Sol has stalled on |
 | GPT-6 Luna | `gpt-6-luna` | High-volume mechanical work; usually below what these skills need |
 
@@ -78,15 +79,22 @@ the model that made it.
 
 Codex has **no `agents/` directory**. The six roles in `agents/` are a Claude Code feature.
 
-Use them as prompts instead. Each agent file is self-contained — role, model hint, exact read list,
-rules and handoff format — so paste or reference one:
+Use them as prompts instead. `install.sh` copies all six to **`.unity-skillforge/agents/`**, and
+each file is self-contained — role, model hint, exact read list, allowed skills, rules and handoff
+format. Reference the file rather than pasting it, so the role stays in one place:
 
-> "Follow `.unity-skillforge/agents/designer.md` for this task. Spec the grapple hook mechanic."
+| Role | Prompt | Model |
+| --- | --- | --- |
+| Designer | *"Follow `.unity-skillforge/agents/designer.md`. Spec the grapple hook mechanic."* | Sol |
+| Architect | *"Follow `.unity-skillforge/agents/architect.md`. Decide whether this needs a new assembly."* | Sol |
+| Gameplay coder | *"Follow `.unity-skillforge/agents/gameplay-coder.md`. Implement the mechanic in `design/mechanic-grapple.md`."* | Terra |
+| Asset producer | *"Follow `.unity-skillforge/agents/asset-producer.md`. Produce the enemy sprites."* | Terra |
+| QA | *"Follow `.unity-skillforge/agents/qa.md`. Verify the grapple against its acceptance checks."* | Terra |
+| Reviewer | *"Follow `.unity-skillforge/agents/reviewer.md`. Review the last change before I commit."* | Sol |
 
-Or more directly:
-
-> "Act as the architect from `.unity-skillforge/agents/architect.md`. Read only design/STATE.md and
-> design/INDEX.md first, then decide whether this needs a new assembly."
+Each role file tells the model to read only `design/STATE.md` and `design/INDEX.md` first, so it
+behaves the same way a Claude Code subagent would — minus the isolated context window, which Codex
+does not provide here.
 
 The one Codex-native equivalent is `agents/openai.yaml` **inside a skill**, which can declare an
 interface and tool dependencies for that skill. This pack does not use it — the roles are
@@ -116,7 +124,8 @@ name = "assets-gen-3d-model"
 enabled = false
 ```
 
-Exactly one selector per entry (`path` **or** `name`), and the last matching entry wins.
+Exactly one selector per entry — `path` **or** `name`, not both. A `name` selector disables every
+skill with that name.
 
 ## MCP servers
 
@@ -165,8 +174,12 @@ Also available, and recommended alongside this pack:
 
 ```bash
 codex plugin marketplace add Unity-Technologies/unity-agent-plugin
-codex plugin add unity@unity-agent-plugin
 ```
+
+Then install it from Codex's in-app `/plugins` browser. An install subcommand is reported by
+third-party write-ups but is not in OpenAI's documentation, so use the browser rather than guessing
+at a command. Alternatively install the skills directly from
+[`Unity-Technologies/skills`](https://github.com/Unity-Technologies/skills).
 
 ## Codex-specific gotchas
 
