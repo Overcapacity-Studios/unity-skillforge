@@ -8,13 +8,19 @@ until one of them points further. That is what keeps context cost flat as a proj
 ```
 your-game/
   design/
-    STATE.md            # where we are now. Read on EVERY task. Under 60 lines.
+    STATE.md            # where we are now, incl. Stage. Read on EVERY task. Under 60 lines.
     INDEX.md            # a map of every other design doc. A doc with no row here is invisible.
+    concept.md          # the early hypothesis: verbs, loop, risks. Pre-pitch, pre-Unity
     pitch.md            # fantasy, pillars, core loop, dimension, scope
-    art-bible.md        # the style lock. No asset is made without it
-    tech-decisions.md   # append-only decision log
+    decisions.md        # DESIGN decisions: what the game is. Read its Index table, not the file
+    art-bible.md        # the style lock. No production asset is made without it
+    tech-decisions.md   # TECHNICAL decisions: how it is built. Append-only
     mechanic-<name>.md  # one per mechanic: rules, tuning, feel, acceptance checks
+    prototype-<name>.md # one per hypothesis: minimum test, criteria, and the playtest log
 ```
+
+`decisions.md` and `tech-decisions.md` are deliberately separate: *what the game is* versus *how it
+is built*. The first is owned by the designer and the game-director, the second by the architect.
 
 `install.sh` creates `STATE.md` and `INDEX.md`. The rest are created by the skills that own them.
 If you have no `design/` folder, start with the first workflow below.
@@ -22,17 +28,72 @@ If you have no `design/` folder, start with the first workflow below.
 **The single most important field is `Dimension`** in `STATE.md`: `2D`, `2.5D` or `3D`. It decides
 camera, renderer, physics, art cost and which skills load. The router asks rather than guessing.
 
+**`Stage`** — `concept`, `prototype`, `production`, `polish`, `shipped` — is how an existing project
+resumes instead of restarting. A project with no Stage field is treated as `production`, so older
+`design/` folders keep working unchanged.
+
 ---
 
-## Workflow: a new game from a pitch
+## Workflow: a rough idea
+
+> **Prompt:** "I have a rough idea — a game about repairing lighthouses in a storm. Help me develop
+> it. Use the unity-game-router skill."
+
+```
+design-idea-discovery → (you agree) → design-write-gdd → design-prototype-plan
+```
+
+`design-idea-discovery` is a conversation, not a document generator. It plays the idea back, asks at
+most three high-impact questions at a time, offers concrete options with tradeoffs, challenges what
+contradicts itself, names the gameplay and technical risks, and writes `design/concept.md` with
+every line marked **confirmed** or **assumed**. It will not write a GDD from one sentence, and it
+needs no Unity project, no Unity CLI and no art decision.
+
+Walkthrough: [idea to prototype](../examples/idea-to-prototype-walkthrough.md).
+
+## Workflow: get the design challenged
+
+> **Prompt:** "Act as my game director. Find the weaknesses in my core loop."
+> **Prompt:** "Would adding multiplayer damage the current design?"
+> **Prompt:** "Review the grapple hook against the whole game."
+
+The `game-director` agent reads `STATE.md`, `INDEX.md` and the Index table of `decisions.md`, then
+only the mechanics the question touches. It reports design context, player impact, effect on
+existing mechanics, conflicts with approved decisions, production cost, risks, options with
+tradeoffs, a recommendation, and **what needs your approval**.
+
+What it will not do: approve its own recommendation, override something you decided, rewrite the
+GDD for a small change, block a bug fix, or tell you a mechanic is fun. Fun is observed, not
+derived — it will route you to a prototype instead.
+
+## Workflow: prototype before committing
+
+> **Prompt:** "I want to test whether the repair mechanic is tense before building it properly."
+
+```
+design-prototype-plan → core-* / dimension skills on PH_ placeholders → qa-playmode-check → you play it → design-decision-log
+```
+
+- **Placeholders are allowed with no art bible**: Unity primitives, flat materials, blockout
+  geometry, debug visuals, unstyled UI. They go in `Assets/_Project/Prototype/` with a `PH_` prefix
+  and are listed in the prototype doc. Generated production art is still gated on a locked style.
+- Two kinds of validation are kept apart. **Technical** criteria (does it work, is it fast enough,
+  do the controls behave) are measurable and run by `qa-playmode-check`. **Gameplay** questions (was
+  it understood, did it feel right, were you frustrated) are answered only by a human who played it.
+- **Agents never fill in the playtest log.** Until you report a session it says "not played yet",
+  and the verdict stays "not concluded". Tell the agent what happened and it transcribes it.
+
+## Workflow: a new game from an agreed pitch
 
 > **Prompt:** "I want to build a 2D platformer where a courier delivers parcels through a storm.
 > Use the unity-game-router skill."
 
 What happens:
 
-1. `unity-game-router` finds no `design/` and routes to `design-write-gdd`.
-2. `design-write-gdd` writes `pitch.md`, `STATE.md` and `INDEX.md`, and pins the dimension.
+1. `unity-game-router` finds no `design/` and, because the concept is already settled, routes to
+   `design-write-gdd`. A vaguer idea would have gone to `design-idea-discovery` instead.
+2. `design-write-gdd` writes `pitch.md`, `STATE.md` and `INDEX.md`, pins the dimension and the
+   Stage, and logs what the pitch settles through `design-decision-log`.
 3. `assets-art-style-lock` creates `art-bible.md`. **Give it a reference image** — a style cannot be
    locked with adjectives, and every later asset depends on this.
 4. `core-scene-setup` builds the bootstrap scene; `core-input-setup` wires the Input System.
@@ -50,6 +111,12 @@ be derived from.
 ```
 design-mechanic-spec → core-scriptable-object-data → core-unity-script → qa-playmode-check
 ```
+
+For a **significant** mechanic — a new system, a core-loop change, a scope increase — a
+`game-director` review comes first, and `design-mechanic-spec`'s fit review checks it against the
+pillars, the loop, the mechanics it touches and `decisions.md`. For a **trivial** change — a tuning
+value, a rename, a bug — none of that runs: edit the number and re-verify. Process is proportional
+on purpose.
 
 The spec comes first on purpose. It produces the **acceptance checks**, which are what makes "done"
 decidable instead of a matter of opinion. If you skip it, `qa-playmode-check` has nothing to measure
@@ -120,7 +187,8 @@ report, and ranks findings as blocking, should-fix or nit. It reports; it does n
 
 | Agent | Model hint | Use it for |
 | --- | --- | --- |
-| `designer` | opus / GPT-6.1 Sol | Pitch to docs, mechanic specs, scope cuts |
+| `game-director` | opus / GPT-6.1 Sol | Judging a feature against the whole game, scope, conflicts |
+| `designer` | opus / GPT-6.1 Sol | Concept, pitch, mechanic specs, prototype plans, scope cuts |
 | `architect` | opus / GPT-6.1 Sol | Layers, assemblies, package and pattern decisions |
 | `gameplay-coder` | sonnet / GPT-6.1 Terra | Implementing a specified mechanic |
 | `asset-producer` | sonnet / GPT-6.1 Terra | Art and audio, generation and import |
@@ -133,7 +201,7 @@ Each one reads only `design/STATE.md` and `design/INDEX.md` to start, and ends i
 format naming what it wrote, what it verified, and where the work goes next — the next skill for the
 building roles, "hand back to" for `qa` and `reviewer`.
 
-Codex has no subagent directory. `install.sh` copies the six role files to
+Codex has no subagent directory. `install.sh` copies the seven role files to
 `.unity-skillforge/agents/`, and [CODEX.md](CODEX.md) gives a one-line prompt for each that points
 at them.
 
@@ -150,3 +218,7 @@ at them.
   finished work to be redone.
 - **Say when a proposed number is wrong.** Agents propose defaults and flag them; correcting the
   spec is cheaper than correcting the code.
+- **You approve decisions; agents propose them.** Anything in `decisions.md` marked `PROPOSED` is
+  waiting on you. Nothing becomes `APPROVED` because an agent liked its own idea.
+- **Report playtests in your own words.** "I got lost after the second room" is worth more than any
+  metric here, and it is the only input that can answer a gameplay question.

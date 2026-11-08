@@ -23,11 +23,16 @@ A worked example, start to finish:
 
 > **You:** "I want a 2D platformer where a courier delivers parcels across rooftops in a storm."
 >
-> The agent writes `design/pitch.md` and asks you two things it cannot guess — is this 2D, 2.5D or
-> 3D, and what should the art look like. It then builds the bootstrap scene, wires the Input System,
-> writes the movement spec with real numbers, implements it from the templates here, runs
-> `unity recompile --strict` and the tests, enters Play Mode to check the player actually jumps the
-> height the spec says, and records where things stand.
+> The agent develops the idea with you first — what the player actually does, what the loop is, what
+> it would cost solo — and challenges the parts that do not hold, instead of handing you a design
+> document full of decisions you never made. Once you agree, it writes `design/pitch.md`, asks the
+> two things it cannot guess (2D, 2.5D or 3D, and what the art should look like), builds the
+> bootstrap scene, wires the Input System, writes the movement spec with real numbers, implements it
+> from the templates here, runs `unity recompile --strict` and the tests, enters Play Mode to check
+> the player actually jumps the height the spec says, and records where things stand.
+
+It also knows when **not** to do that: a bug fix is a bug fix, and gets routed straight to the QA
+skill with no design process attached.
 
 Both walkthroughs trace this in full:
 [2D platformer](examples/2d-platformer-walkthrough.md) ·
@@ -35,7 +40,72 @@ Both walkthroughs trace this in full:
 page, read a walkthrough** — it shows the real shape of the work.
 
 What it will not do: it never invents a Unity command (it asks your Editor what exists first), never
-claims a Play Mode result it did not observe, and never generates art before you have agreed a style.
+claims a Play Mode result it did not observe, never invents a playtest result no human gave it, and
+never generates production art before you have agreed a style.
+
+## The workflow, end to end
+
+```
+Idea → Discovery → Director review → Game design → Prototype plan
+     → Prototype → Playtest → Production → QA → Release
+```
+
+| Stage | What runs | What you get |
+| --- | --- | --- |
+| **Idea** | you, in one sentence | — |
+| **Discovery** | `design-idea-discovery` | `design/concept.md`: fantasy, verbs, loop hypothesis, pillars, risks. Needs no Unity project |
+| **Director review** | the `game-director` agent | Options with tradeoffs, conflicts with what you already approved, a recommendation |
+| **Game design** | `design-write-gdd`, `design-decision-log` | `pitch.md`, `STATE.md`, `INDEX.md`, `decisions.md` |
+| **Prototype plan** | `design-prototype-plan` | The smallest playable test of your riskiest assumption, with agreed success and reject criteria |
+| **Prototype** | `core-*` and the dimension skills, on `PH_` placeholders | Something playable. No art style needed yet |
+| **Playtest** | you, playing it | Observations written into `design/prototype-*.md`. **Agents never fill this in** |
+| **Production** | `design-mechanic-spec` → `core-*` / `2d-*` / `25d-*` / `3d-*` → `assets-*` | The real mechanic, with real art against a locked art bible |
+| **QA** | `qa-run-tests`, `qa-playmode-check`, `qa-fix-console-errors` | Observed results against the spec's acceptance checks |
+| **Release** | `qa-build` | A build that was launched, not just compiled |
+
+You do not have to start at the top. An existing project resumes from the `Stage` field in
+`design/STATE.md`, and nothing already decided gets re-opened.
+
+## Who does what
+
+Seven roles, in `agents/`. You rarely need more than one or two for a task.
+
+| Role | Owns | Call it when |
+| --- | --- | --- |
+| **game-director** | The vision, the pillars, cross-system coherence, scope | Before committing to a significant mechanic, or when you want an idea challenged |
+| **designer** | `design/` — concept, pitch, mechanic specs, prototype plans | Anything needs specifying before it is built |
+| **architect** | Layers, assemblies, packages, `tech-decisions.md` | A feature spans systems, or a package choice is in play |
+| **gameplay-coder** | C#, data assets, scene wiring | A spec exists and needs implementing |
+| **asset-producer** | Art and audio, generation and import | Assets are needed, and the style is locked |
+| **qa** | Compile, tests, play-mode verification | After any implementation, before any build |
+| **reviewer** | Accepting or rejecting a change | Before you commit |
+
+The director and the designer are different jobs: the designer writes what a mechanic does, the
+director judges whether the game should have it. **You are the final creative authority** — the
+director recommends, and records nothing as approved that you did not approve.
+
+### Two examples
+
+**A brand-new game, from a rough idea.**
+
+> "I have a rough idea — a game about repairing lighthouses. Help me develop it."
+
+Discovery asks what you actually *do* second to second, offers two or three concrete loop options
+with their tradeoffs, challenges the parts that contradict each other, and writes
+`design/concept.md` with every line marked confirmed or assumed. Nothing is built, no Unity project
+is needed. When you agree, `design-write-gdd` turns it into the pitch, and
+`design-prototype-plan` plans the smallest thing that tests whether repairing is fun — on capsules
+and cubes, before any art decision.
+
+**An existing game, new mechanic.**
+
+> "I want to add a grappling hook."
+
+The `game-director` reads your pillars, your core loop and `design/decisions.md`, says what the
+grapple would do to the mechanics you already have, flags that it contradicts the "no vertical
+traversal" decision you approved in week two, and gives you options with costs. You decide.
+`design-mechanic-spec` then writes the numbers, the implementing skills build it, and
+`qa-playmode-check` verifies it against the acceptance checks.
 
 ## Quickstart
 
@@ -63,7 +133,7 @@ The Unity CLI is currently **beta** (`1.0.0-beta.x`) and Unity labels it experim
 | Agents supported | Claude Code, Codex, ~70 more | Claude Code, Codex | Claude Code |
 | Take just one skill | **yes** | no | no |
 | Always-on rules (`AGENTS.md`) | no | **yes** | no |
-| The 6 subagents | no | **yes** | yes |
+| The 7 subagents | no | **yes** | yes |
 | Creates `design/STATE.md` | no | **yes** | no |
 | Update later | `npx skills update` | re-run it | `/plugin marketplace update` |
 
@@ -115,7 +185,7 @@ cd unity-skillforge
 .\scripts\install.ps1 C:\dev\MyGame
 ```
 
-This is the only route that also writes `AGENTS.md` (loaded automatically every task), the six
+This is the only route that also writes `AGENTS.md` (loaded automatically every task), the seven
 subagents, and the `design/` contract. It never overwrites an existing `AGENTS.md`, `CLAUDE.md`,
 `design/` file or anything in `Assets/`, and re-running it is safe.
 
@@ -140,11 +210,14 @@ plugin's `AGENTS.md`. Open each session with *"Use the unity-game-router skill"*
 Running more than one route is fine — use the plugin or `npx` for the skills and the installer for
 the rules, if you want both.
 
-**Step 3 — your first prompt.** Literally type this:
+**Step 3 — your first prompt.** Pick the one that matches where you are:
+
+> **"Use the unity-game-router skill. I have a rough idea: \<one sentence\>. Help me develop it."**
+> — starts a design conversation, writes `design/concept.md`, builds nothing yet.
 
 > **"Use the unity-game-router skill. I want to build \<describe your game in one sentence\>."**
-
-It will ask whether the game is 2D, 2.5D or 3D, and create the `design/` folder it works from.
+> — for a concept you have already settled. It asks whether the game is 2D, 2.5D or 3D and creates
+> the `design/` folder it works from.
 
 Uninstalling: `./scripts/uninstall.sh /path/to/your/game`. It removes only this pack's files and
 never touches your `design/` folder or `Assets/`.
@@ -156,11 +229,12 @@ Full details, including an existing project and what to commit:
 
 | Term | Means |
 | --- | --- |
-| **Skill** | One procedure in a `SKILL.md` file. Your agent loads it only when the task matches, so 33 skills cost almost nothing until used |
+| **Skill** | One procedure in a `SKILL.md` file. Your agent loads it only when the task matches, so 36 skills cost almost nothing until used |
 | **Subagent** | A role (designer, coder, QA...) with its own fresh context and a narrow remit |
 | **Router** | The one skill to start with when you are unsure. It reads your project state and picks the others |
 | **Dimension** | Whether your game is **2D, 2.5D or 3D**. Recorded once in `design/STATE.md`; it decides camera, renderer, physics and art cost |
-| **`design/`** | A folder in *your game repo* holding what you are building — status, pitch, art style, one file per mechanic. The pack reads it; you own it |
+| **`design/`** | A folder in *your game repo* holding what you are building — status, concept, pitch, approved decisions, art style, one file per mechanic and prototype. The pack reads it; you own it |
+| **Stage** | Where the project is: `concept`, `prototype`, `production`, `polish`, `shipped`. Recorded in `design/STATE.md` so an existing project resumes instead of restarting |
 | **Tier 0 / 1 / 2** | How the pack rations your context. Tier 0 (`AGENTS.md`) is always loaded; Tier 1 is a skill, loaded only when the task matches; Tier 2 (`references/`, `templates/`) is read only when a skill names the exact file |
 | **`PACK/`** | How a skill refers to the pack's own files. In your game repo it means the `.unity-skillforge/` folder the installer creates |
 | **Unity CLI** | The `unity` command. How the agent drives your Editor — compile, test, build |
@@ -168,12 +242,12 @@ Full details, including an existing project and what to commit:
 
 ## What you get
 
-**33 skills**, flat under `skills/`, grouped by prefix:
+**36 skills**, flat under `skills/`, grouped by prefix:
 
 | Group | Skills | Covers |
 | --- | --- | --- |
 | `unity-game-router` | 1 | Classifies the task and project dimension, loads the minimum skill set |
-| `design-*` | 4 | Pitch to design docs, mechanic specs, scope cuts, state updates |
+| `design-*` | 7 | Idea discovery, pitch to design docs, mechanic specs, prototype plans, decision log, scope cuts, state updates |
 | `core-*` | 7 | Scripts, ScriptableObject data, event channels, input, save, UI Toolkit, scenes |
 | `2d-*` | 5 | Sprite import, tilemaps, 2D physics, sprite animation, 2D lighting |
 | `25d-*` | 3 | Fixed-angle camera, billboard sprites, sorting and depth |
@@ -181,8 +255,8 @@ Full details, including an existing project and what to commit:
 | `assets-*` | 5 | Art style lock, 2D and 3D generation, import pipeline, audio |
 | `qa-*` | 4 | Tests, play-mode verification, console errors, builds |
 
-**6 subagents** in `agents/` — designer, architect, gameplay-coder, asset-producer, qa, reviewer —
-each with a model hint, an exact read list and a fixed handoff format.
+**7 subagents** in `agents/` — game-director, designer, architect, gameplay-coder, asset-producer,
+qa, reviewer — each with a model hint, an exact read list and a fixed handoff format.
 
 **Costs:** the pack itself is free, and so is the Unity CLI. The only paid dependency is optional —
 `assets-gen-3d-model` uses Meshy, which needs a **paid Meshy Pro or higher** plan and spends credits
@@ -212,7 +286,7 @@ Bold entries are the ones no other Unity agent pack covers.
 | Agent | How it loads | Notes |
 | --- | --- | --- |
 | **Claude Code** | Plugin, or `.claude/skills/` + `.claude/agents/` | Subagents supported |
-| **OpenAI Codex** | `.agents/skills/` + root `AGENTS.md` | No subagent directory; `docs/CODEX.md` ships the six roles as prompts |
+| **OpenAI Codex** | `.agents/skills/` + root `AGENTS.md` | No subagent directory; `docs/CODEX.md` ships the seven roles as prompts |
 
 Skill frontmatter is restricted to `name`, `description` and `metadata`, so a skill stays valid
 outside Claude Code too, where any other key is a hard error.
@@ -254,17 +328,20 @@ owns that migration. See [docs/INSTALL.md](docs/INSTALL.md#already-have-a-unity-
 | [docs/ASSETS.md](docs/ASSETS.md) | Asset providers, licensing and commercial-use caveats |
 | [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Unity not connecting, skills not triggering, version mismatches |
 | [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) | Adding a skill, and the checks it must pass |
+| [examples/idea-to-prototype-walkthrough.md](examples/idea-to-prototype-walkthrough.md) | A rough idea to a played prototype, and a new mechanic on an existing game |
 | [examples/](examples/) | Full 2D platformer and 3D third-person walkthroughs |
 
 ## Project status
 
-Version 0.1.0. Every skill, rule and reference here was written against Unity's current published
+Version 0.2.0. Every skill, rule and reference here was written against Unity's current published
 documentation. `scripts/validate-skills.py` enforces the structural rules and runs in CI
 (`.github/workflows/validate.yml`) alongside shellcheck, manifest checks and an end-to-end
 install/uninstall test.
 
 **Nothing in this repo has been executed against a running Unity Editor**, so every `unity` command,
-import setting and Play Mode check is documented from Unity's own docs, not observed. The Unity CLI
+import setting and Play Mode check is documented from Unity's own docs, not observed. The workflow
+tests in `scripts/test-workflows.py` are static checks on the pack's own routing contracts — they
+prove the pack says the right thing, not that an Editor behaved a certain way. The Unity CLI
 is beta, so `unity --help` is authoritative for your version. See
 [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) if a command behaves differently on your install.
 

@@ -1,8 +1,8 @@
 ---
 name: design-mechanic-spec
-description: Specify one mechanic before building it - rules with numbers, tuning values, feel targets and the acceptance checks QA verifies against. Use before implementing any gameplay. Without a spec there is nothing to verify, so playmode-check cannot pass.
+description: Specify one mechanic before building it - its fit with the pillars and existing systems, rules with numbers, tuning values, feel targets, and the acceptance checks QA verifies against. Use before implementing any gameplay. Without a spec there is nothing to verify.
 metadata:
-  version: 0.1.0
+  version: 0.2.0
 ---
 
 # Specify a mechanic
@@ -20,6 +20,19 @@ plugin's root directory (plugin install), or `skills/unity-skillforge-pack/` in 
 Writing the spec first is not ceremony: the **acceptance checks** are what makes "done" decidable
 instead of a matter of opinion.
 
+## Scale the review to the change
+
+Step 1 below is a design review of how the mechanic fits the rest of the game. Its depth depends on
+the change, and getting that wrong costs either quality or momentum:
+
+| The change is | Review |
+| --- | --- |
+| **Significant** — a new system, a core-loop change, something several mechanics touch | Full review, and a `game-director` review before the spec is written |
+| **Moderate** — a new mechanic inside an existing system | Full step 1, no director review |
+| **Trivial** — a tuning value, a rename, a bug fix, a mechanic already specified | Skip step 1 entirely. Edit the number in the spec and move on |
+
+A long review on a trivial change is not thoroughness, it is friction.
+
 ## Inputs needed
 
 - Which mechanic, and which pitch pillar it serves. **If it serves no pillar, say so and recommend
@@ -30,10 +43,25 @@ instead of a matter of opinion.
 
 ## Steps
 
-1. Read `design/STATE.md`, `design/INDEX.md`, and `design/pitch.md` for the pillars.
+1. **Fit review** (skip for a trivial change — see the table above). Read `design/STATE.md`,
+   `design/INDEX.md`, `design/pitch.md`, and the **Index table** of `design/decisions.md`. Then,
+   in a short paragraph each:
+   - **Pillars** — which pillar it serves. If none fits, stop and recommend cutting it.
+   - **Core loop** — where in the loop it sits, and what it adds to the player's decision there.
+   - **Affected mechanics** — open only the specs `INDEX.md` names as related. Say for each whether
+     this strengthens it, weakens it, or makes it redundant.
+   - **System dependencies** — input, save, UI, event channels, assets. Name them; they become the
+     Dependencies section.
+   - **Player experience** — what changes for the player, and whether that is what the pitch wants.
+   - **Conflicts** — anything contradicting an `APPROVED` entry in `design/decisions.md`. **Raise
+     it; do not design around it.** Hand to `design-decision-log` and let the user decide.
+   - **Prototype needed?** Yes if the mechanic rests on an untested claim about how it will feel,
+     or on a technical unknown. Then route to `design-prototype-plan` *before* writing the spec.
+   - **Verdict** — implement, revise (with the one named change), or reject (with the reason).
+     Report it before writing the rest of the file.
 2. Copy `PACK/templates/game-design/mechanic.md` to `design/mechanic-<name>.md` and add a row to
    `design/INDEX.md`. One mechanic per file.
-3. Name the pillar it serves. If none fits, stop and raise it before writing anything else.
+3. Record the pillar it serves in the file.
 4. Write the **player-facing description** in two sentences with no implementation words. If it
    cannot be described without naming a component, it is not a mechanic yet.
 5. Fill the **Inputs** table with action names that match `core-input-setup` conventions
@@ -79,6 +107,9 @@ See `PACK/references/unity-cli.md`.
 | Project status and dimension | `design/STATE.md` |
 | Design map | `design/INDEX.md` |
 | Pillars this must serve | `design/pitch.md` |
+| Approved decisions, Index table only | `design/decisions.md` |
+| Mechanics this interacts with | `design/mechanic-*.md` (only those `INDEX.md` names) |
+| A prototype result that settles a claim | `design/prototype-*.md` |
 | Template to copy | `PACK/templates/game-design/mechanic.md` |
 | Routing table for the implementing skill | the `unity-game-router` skill |
 | Input action conventions | `PACK/references/input-system.md` |
@@ -87,6 +118,12 @@ See `PACK/references/unity-cli.md`.
 
 ## Done checklist
 
+- [ ] The review depth matched the change; a trivial change skipped step 1.
+- [ ] For a significant mechanic, a `game-director` review happened first.
+- [ ] Affected mechanics and system dependencies were named, not assumed.
+- [ ] Any conflict with an `APPROVED` decision was raised rather than designed around.
+- [ ] Whether a prototype is needed was decided, and said out loud.
+- [ ] A verdict — implement, revise or reject — was reported.
 - [ ] The file is `design/mechanic-<name>.md` with a row in `design/INDEX.md`.
 - [ ] The pillar it serves is named, or cutting it was recommended.
 - [ ] The player-facing description uses no implementation words.
@@ -112,3 +149,9 @@ See `PACK/references/unity-cli.md`.
 - Writing the spec after the code, which just documents whatever was built.
 - Presenting proposed defaults as if the user had chosen them.
 - Specifying a mechanic that serves no pillar instead of recommending it be cut.
+- Specifying it in isolation, so it quietly makes an existing mechanic pointless.
+- Designing around a conflict with an approved decision instead of surfacing it, which leaves the
+  game holding two incompatible rules and the user unaware.
+- Running the full fit review on a one-line tuning change.
+- Writing a spec full of numbers for a mechanic whose feel is still a guess, when a prototype
+  would have answered it first.

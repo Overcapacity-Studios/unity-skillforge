@@ -14,6 +14,10 @@ After an install it is at `.unity-skillforge/references/asset-licensing.md`, or
 - **Nothing is generated without a locked `design/art-bible.md`.** The generation skills stop if it
   is not locked, because an unlocked style means every asset is a fresh guess and the set has to be
   redone — which for 3D costs real credits twice.
+- **Prototypes are the exception, and need no lock.** Unity primitives, flat materials, blockout
+  geometry and debug visuals, in `Assets/_Project/Prototype/` with a `PH_` prefix, listed in the
+  prototype doc. Nothing is generated for a prototype — a capsule is free — so the gate on
+  generated art is untouched.
 - **2D:** any image model → `assets-gen-2d-sprite` → `2d-sprite-import` (PPU, pivot, filter) →
   `2d-sprite-animation`. Masters stay in `art-source/`, outside `Assets/`.
 - **3D:** Meshy MCP → `assets-gen-3d-model` → `assets-import-pipeline` (scale, axis, LODs, URP

@@ -3,14 +3,22 @@
 ## Before anything else
 
 ```bash
-python3 scripts/validate-skills.py    # must exit 0
+python3 scripts/validate-skills.py    # structure, limits, references — must exit 0
+python3 scripts/test-workflows.py     # routing and honesty contracts — must exit 0
 claude plugin validate .              # must pass
 shellcheck -S warning scripts/*.sh    # must be clean
 ```
 
-CI (`.github/workflows/validate.yml`) runs all three on every push and pull request, plus manifest
-checks, an end-to-end install/uninstall into a scratch repo, and the sprite-slicer's grid maths. The
-validator is stdlib-only so it works on a clean machine.
+CI (`.github/workflows/validate.yml`) runs all four on every push and pull request, plus manifest
+checks, an end-to-end install/uninstall into a scratch repo, and the sprite-slicer's grid maths.
+Both Python scripts are stdlib-only so they work on a clean machine.
+
+`test-workflows.py` is **static**: it checks that the pack's documents say the right thing — that a
+rough idea routes to discovery, that the art-bible gate still holds for production art while
+placeholders are exempt, that a bug fix skips design, and that nothing tells an agent to invent a
+Play Mode or playtest result. It runs no agent and contacts no Unity Editor, so a pass is never
+evidence of runtime behaviour. If you change the wording of one of those contracts, update the
+matching assertion with it — that is the point of the file.
 
 Shell scripts must run on **bash 3.2**, which is what macOS ships. No `mapfile`, no associative
 arrays, no `${var,,}`.
@@ -58,7 +66,10 @@ These come from how Claude Code and Codex actually load files, not from taste:
    belong to a game project and are not checked.
 6. **Add a row to the routing table in both `AGENTS.md` and
    `skills/unity-game-router/SKILL.md`.** The validator fails if they drift.
-7. **Update the counts** in `README.md` and `docs/ARCHITECTURE.md` if the group size changed.
+7. **Update the counts** in `README.md`, `docs/ARCHITECTURE.md`, `docs/INSTALL.md` and
+   `docs/CODEX.md` if the group size changed.
+8. **Add a workflow assertion** to `scripts/test-workflows.py` if the skill owns a contract that
+   would be dangerous to lose — a gate, a routing precondition, or an honesty rule.
 
 ## Writing style for skills
 
@@ -100,7 +111,8 @@ Do not add a `skills:` key. It injects **full skill content**, not descriptions,
 tiering the whole repo is built around. List allowed skills in the body instead.
 
 Every agent must open by reading only `design/STATE.md` and `design/INDEX.md`, and end in its fixed
-handoff format.
+handoff format. An agent that can reach `design/decisions.md` must also state that it writes
+`PROPOSED` and never `APPROVED` — only the user approves a design decision.
 
 ## Commits
 

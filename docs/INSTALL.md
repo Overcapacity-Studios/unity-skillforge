@@ -102,9 +102,9 @@ The Pipeline package exposes a **localhost-only** HTTP API. Nothing is exposed t
 | | Path A — plugin | Path B — installer | Path C — `npx skills` |
 | --- | --- | --- | --- |
 | Works with | Claude Code only | **Claude Code and Codex** | Claude Code, Codex and ~70 other agents |
-| Ships the 33 skills | yes | yes | yes |
+| Ships the 36 skills | yes | yes | yes |
 | Ships the shared rules/templates | yes (plugin root) | yes (`.unity-skillforge/`) | yes — **as the `unity-skillforge-pack` skill** |
-| Ships the 6 subagents | yes | yes | no |
+| Ships the 7 subagents | yes | yes | no |
 | **Loads the rules automatically** | **no** | **yes**, via `AGENTS.md` | **no** |
 | Creates `design/STATE.md` | no | yes (never overwrites an existing one) | no |
 | Lets you take just one skill | no | no | **yes** |
@@ -144,8 +144,9 @@ rest. `/plugin` also lists `unity-skillforge` as installed and enabled.
    `CLAUDE.md`. The `unity-game-router` skill carries the same hard rules and routing table, so
    open each session with **"Use the unity-game-router skill"**.
 2. **There is no `design/` folder.** The skills read `design/STATE.md` on every task. The router
-   handles its absence — it routes you to `design-write-gdd`, which creates it — so this is a first
-   prompt, not a blocker. Starting with the router sentence above covers both points.
+   handles its absence — it routes a rough idea to `design-idea-discovery` and an agreed concept to
+   `design-write-gdd`, and either one creates it — so this is a first prompt, not a blocker.
+   Starting with the router sentence above covers both points.
 
 To remove both limitations, run Path B as well.
 
@@ -193,11 +194,11 @@ This writes:
 
 ```
 your-game/
-  .claude/skills/<33 skills>      # Claude Code
+  .claude/skills/<36 skills>      # Claude Code
   .claude/agents/<6 agents>       # Claude Code subagents
-  .agents/skills/<33 skills>      # Codex  (NOT .codex/skills)
+  .agents/skills/<36 skills>      # Codex  (NOT .codex/skills)
   .unity-skillforge/              # the read-by-path tier: references, rules, templates, scripts,
-                                  # docs, and the six agent role files (Codex reads them from here)
+                                  # docs, and the seven agent role files (Codex reads them from here)
   .unity-skillforge/AGENTS.md     # the rules file your AGENTS.md points at
   AGENTS.md                       # Tier 0 rules (appended to, never overwritten)
   CLAUDE.md                       # contains only @AGENTS.md
@@ -211,7 +212,7 @@ Two terms used above, since the installer prints them at you:
 - **Tier 1** — a single skill's `SKILL.md`, loaded only when your task matches it. Capped at 200
   lines.
 - **Tier 2** — `references/`, `rules/`, `templates/`: read **only** when a skill names the exact
-  file. This is how 33 skills and a few thousand lines of reference cost nearly nothing until used.
+  file. This is how 36 skills and a few thousand lines of reference cost nearly nothing until used.
 
 `.unity-skillforge/` is a **fixed path on purpose**: every skill refers to its own files as
 `PACK/references/...`, and a fixed location is the only thing that resolves for both tools. Claude
@@ -283,7 +284,7 @@ Useful flags: `--copy` to copy rather than symlink, `-g` for a user-level instal
 project, `--json` for machine-readable output. It writes a `skills-lock.json`, and
 `npx skills update` upgrades them later.
 
-What this path does **not** give you: the six subagents, the always-on `AGENTS.md`, or
+What this path does **not** give you: the seven subagents, the always-on `AGENTS.md`, or
 `design/STATE.md`. Open each session with *"Use the unity-game-router skill"*, which will create the
 `design/` folder on its first run.
 

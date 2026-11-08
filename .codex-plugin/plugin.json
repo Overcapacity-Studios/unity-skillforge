@@ -1,6 +1,6 @@
 {
   "name": "unity-skillforge",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Skills for building Unity 2D, 2.5D and 3D games with the Unity CLI, plus the design-document workflow they depend on.",
   "author": {
     "name": "Overcapacity Studios",
@@ -35,6 +35,7 @@
     "websiteURL": "https://github.com/Overcapacity-Studios/unity-skillforge",
     "supportURL": "https://github.com/Overcapacity-Studios/unity-skillforge/issues",
     "defaultPrompt": [
+      "I have a rough game idea. Help me develop it into something worth building.",
       "Turn this pitch into a Unity game design: a 2D platformer about a courier in a storm.",
       "Set up an isometric 2.5D camera and fix my sprite sorting.",
       "Add a dash mechanic to my 3D character controller and verify it in play mode."

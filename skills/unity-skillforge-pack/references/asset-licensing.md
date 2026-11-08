@@ -10,12 +10,19 @@ pixels or polygons.
 
 ## The rule that comes before any provider
 
-**No asset is made without a locked `design/art-bible.md`.** `assets-art-style-lock` owns that file,
-and the generation skills stop if its status is 🔴.
+**No production asset is made without a locked `design/art-bible.md`.** `assets-art-style-lock` owns
+that file, and the generation skills stop if its status is 🔴.
 
 This is not bureaucracy. Without a locked style prompt, reference image and palette, each generation
 is an independent guess, the set does not match itself, and it has to be redone — which for 3D means
 spending credits twice.
+
+**Prototype placeholders are exempt**, because they are not assets anyone licenses: Unity
+primitives, flat-colour materials, blockout geometry, debug visuals and unstyled UI, kept in
+`Assets/_Project/Prototype/` with a `PH_` prefix. They still get no provenance row — there is
+nothing to license — but they are listed in the prototype's `design/prototype-*.md` so they are
+findable when real art replaces them. Anything generated, bought or downloaded is production art:
+gated on the lock, and it gets a provenance row.
 
 ## 2D pipeline
 

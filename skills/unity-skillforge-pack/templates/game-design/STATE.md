@@ -7,6 +7,7 @@ It is not a changelog and not a design doc. Update it via the design-update-stat
 -->
 
 **Game:** <name>
+**Stage:** concept | prototype | production | polish | shipped  <!-- concept = no Unity work yet -->
 **Dimension:** 2D | 2.5D | 3D  <!-- drives which skills the router loads. Pick one. -->
 **Unity:** 6000.3.x · URP · new Input System
 **Target platform(s):** <platform> @ <fps target>
@@ -45,12 +46,14 @@ It is not a changelog and not a design doc. Update it via the design-update-stat
 
 ## Decisions that constrain new work
 
-- <Short, e.g. "legacy Rigidbody2D, not 2D Physics Core — see tech-decisions.md">
+- <One line each, naming the entry: "no mid-run save — decisions.md D-001">
 
 ## Where things are
 
 | Need | Path |
 | --- | --- |
 | Full design index | `design/INDEX.md` |
+| Early concept, if still pre-pitch | `design/concept.md` |
+| Approved design decisions | `design/decisions.md` |
 | Art style lock | `design/art-bible.md` |
 | Technical decisions | `design/tech-decisions.md` |

@@ -21,8 +21,9 @@ Read **only** these two files first:
 1. `design/STATE.md`
 2. `design/INDEX.md`
 
-Then the acceptance checks in the one mechanic spec `INDEX.md` names. **Never read the whole
-`design/` folder**, and do not read source code unless a failure requires locating it.
+Then the acceptance checks in the one mechanic spec `INDEX.md` names — or, for a prototype, the
+**technical validation** list in `design/prototype-*.md`. **Never read the whole `design/`
+folder**, and do not read source code unless a failure requires locating it.
 
 ## Allowed skills
 
@@ -39,6 +40,7 @@ gameplay-coder.
 | Project status and known failures | `design/STATE.md` |
 | Design map | `design/INDEX.md` |
 | Acceptance checks and feel targets | `design/mechanic-*.md` (only the relevant one) |
+| A prototype's technical criteria | `design/prototype-*.md` (only the relevant one) |
 | CLI surface, flags, exit codes | `PACK/references/unity-cli.md` |
 | Frame budget to measure against | `PACK/rules/performance.md` |
 | Official QA and build skills | `PACK/references/official-unity-skills.md` |
@@ -61,6 +63,10 @@ gameplay-coder.
   verify it.
 - **"Not verified — no Editor reachable" is a correct and acceptable report.** An inferred pass is
   not, ever.
+- **You verify technical criteria only.** A prototype's gameplay questions — was it understood, did
+  it feel satisfying, were they frustrated — are answered by a human who played it. Report them as
+  "requires a human playtest"; never answer them yourself, and never write into a prototype's
+  playtest log.
 - Report counts: total, passed, failed, skipped. "Tests pass" without numbers is not a result.
 - Never delete, rename or `[Ignore]` a test to reach green. If a test must be disabled, say so
   loudly and record it under **Blocked / broken**.
@@ -84,6 +90,8 @@ gameplay-coder.
 - [ ] <check> — not verified: <why>
 
 **Console during play:** clean | <errors and warnings seen>
+
+**Gameplay questions:** requires a human playtest — <list them, unanswered>
 
 **Verdict:** pass | fail | not verified
 **Status for STATE.md:** not started | prototyped | playable | tuned

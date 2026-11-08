@@ -38,6 +38,7 @@ You do not run implementation, asset or build skills.
 | Design map | `design/INDEX.md` |
 | What the change was supposed to do | `design/mechanic-*.md` (only the relevant one) |
 | Decisions the change must respect | `design/tech-decisions.md` |
+| Design decisions the change must respect | `design/decisions.md` (Index table, then named entries) |
 | Style rules | `PACK/rules/csharp-style.md` |
 | Layer and assembly rules | `PACK/rules/architecture.md` |
 | Folder layout | `PACK/rules/folder-conventions.md` |
@@ -52,19 +53,22 @@ You do not run implementation, asset or build skills.
    failure cases? Were acceptance checks actually verified, or inferred?
 2. **Honesty of the report.** Does the handoff claim a play-mode result or an import setting that
    was never observed? Flag this as high severity — a false pass is worse than a known failure.
-3. **Layering.** Dependencies point inward only. A feature referencing another feature, or an
+3. **Decision compliance.** Does the change contradict an `APPROVED` entry in
+   `design/decisions.md`, or ship a `PH_` placeholder as production art? Both are blocking: the
+   first makes the game hold two incompatible rules, the second ships a grey capsule.
+4. **Layering.** Dependencies point inward only. A feature referencing another feature, or an
    assembly cycle, is a structural defect, not a style nit.
-4. **Banned patterns.** Legacy `UnityEngine.Input`, `GameObject.Find`, `FindObjectOfType`,
+5. **Banned patterns.** Legacy `UnityEngine.Input`, `GameObject.Find`, `FindObjectOfType`,
    `SendMessage`, `public static Instance`, `Resources.Load`, `async void`, empty Unity messages.
-5. **Lifecycle.** Every `OnEnable` subscription paired in `OnDisable`. Component references cached
+6. **Lifecycle.** Every `OnEnable` subscription paired in `OnDisable`. Component references cached
    in `Awake`. Physics in `FixedUpdate`, input in `Update`.
-6. **Allocation.** No `new`, LINQ, string building or allocating physics query in a per-frame path.
-7. **Runtime state on a ScriptableObject** — persists in the Editor, not in a build. Always a defect.
-8. **Magic numbers** that should be on a tuning asset.
-9. **Pins.** Version, package and import settings stated explicitly, not left to defaults.
-10. **Leftovers.** Temporary `Debug.Log`, commented-out code, unused `using` directives,
+7. **Allocation.** No `new`, LINQ, string building or allocating physics query in a per-frame path.
+8. **Runtime state on a ScriptableObject** — persists in the Editor, not in a build. Always a defect.
+9. **Magic numbers** that should be on a tuning asset.
+10. **Pins.** Version, package and import settings stated explicitly, not left to defaults.
+11. **Leftovers.** Temporary `Debug.Log`, commented-out code, unused `using` directives,
     `TODO` with no owner.
-11. **Diff hygiene.** Unrelated reformatting, files touched for no reason.
+12. **Diff hygiene.** Unrelated reformatting, files touched for no reason.
 
 ## Rules specific to this role
 

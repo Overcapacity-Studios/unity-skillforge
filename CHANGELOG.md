@@ -4,6 +4,75 @@ All notable changes to this project are documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning is
 [semantic](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] — 2026-11-08
+
+Extends the pack from "build what is specified" to "work out what is worth building, then build
+it". The existing architecture, routing and install guarantees are unchanged.
+
+### Added
+
+- **`design-idea-discovery`** — develops a rough idea into `design/concept.md` through a
+  collaborative conversation: plays the idea back, asks at most three high-impact questions at a
+  time, proposes options with tradeoffs, challenges contradictions and unearned scope, separates
+  gameplay from technical risk, and recommends a minimum playable experience. Needs no Unity
+  project, no CLI and no art decision. Every line it writes is marked confirmed or assumed.
+- **`design-prototype-plan`** — plans the smallest playable test of one falsifiable hypothesis:
+  minimum feature set, an explicit NOT list, `PH_` placeholders, measurable technical criteria for
+  `qa-playmode-check`, human-only gameplay questions, complexity estimates labelled as assumptions,
+  and success/revise/reject criteria agreed before building. Its playtest log is filled only from
+  what a human reports.
+- **`design-decision-log`** — records and queries `design/decisions.md`: context, alternatives, the
+  recommendation, the user-approved choice, affected systems, dependencies and status
+  (`PROPOSED`, `APPROVED`, `REJECTED`, `SUPERSEDED`, `NEEDS VALIDATION`). Append-only, read by its
+  Index table, and it surfaces a conflict with an approved decision rather than absorbing it.
+- **`game-director` subagent** — judges a feature against the whole game: pillars, core loop,
+  mechanic interactions, conflicts, production cost, risks, options with tradeoffs, a
+  recommendation, and an explicit "needs your approval" line. It never approves its own
+  recommendation, never overrides the user, and never claims a mechanic is fun.
+- **Three design templates**: `concept.md`, `prototype.md` (with the playtest log) and
+  `decisions.md`.
+- **`Stage`** field in `design/STATE.md` — `concept`, `prototype`, `production`, `polish`,
+  `shipped` — so an existing project resumes instead of restarting. A `design/` folder with no
+  Stage is treated as `production`, so older projects keep working unchanged.
+- **The prototype asset exception.** Unity primitives, flat materials, blockout geometry, debug
+  visuals and unstyled UI need no locked art bible, provided they live in
+  `Assets/_Project/Prototype/` with a `PH_` prefix and are listed in the prototype doc. Generated,
+  bought or downloaded production art is still gated on a 🟢 lock, and a placeholder never becomes
+  production art by being renamed.
+- **`scripts/test-workflows.py`** — 126 static checks covering the six workflow cases (vague idea,
+  conflicting mechanic, prototype before art style, resuming a project, bug fix, no Editor) plus
+  packaging. Wired into CI. They check what the documents say; they run no agent and contact no
+  Unity Editor.
+- **`examples/idea-to-prototype-walkthrough.md`** — a rough idea to a played prototype, a new
+  mechanic that conflicts with an approved decision, and the changes that correctly get no process
+  at all.
+
+### Changed
+
+- `unity-game-router` routes by **kind of beginning** and by **Stage**: a rough idea to discovery, an
+  agreed concept to the GDD, a significant change through a `game-director` review, and trivial work
+  straight to the skill that fixes it. It no longer sends every new game to `design-write-gdd`, and
+  creative discussion no longer requires a Unity project or a dimension.
+- `design-mechanic-spec` gained a **fit review** — pillars, core loop, affected mechanics, system
+  dependencies, player impact, decision conflicts, whether a prototype is needed, and a verdict —
+  with explicit triage so a trivial change skips it entirely.
+- `design-write-gdd` treats a concept doc's confirmed lines as settled, sets `Stage`, logs what the
+  pitch decides, and gates only **production** art on the art bible.
+- `design-update-state` maintains `Stage` and prototype status, points at both decision logs, and
+  refuses to record a playtest outcome the user did not report.
+- `assets-art-style-lock` documents the prototype exception; `assets-gen-2d-sprite` and
+  `assets-gen-3d-model` keep their gate and name the placeholder route instead.
+- `designer`, `asset-producer`, `gameplay-coder`, `qa` and `reviewer` updated for the new documents:
+  the designer may run the new design skills, the asset producer reports an asset class, the coder
+  can build to a prototype plan, QA reports gameplay questions as "requires a human playtest", and
+  the reviewer treats a decision conflict or a shipped placeholder as blocking.
+- `AGENTS.md`: hard rule 8 now distinguishes production art from placeholders, rule 3 adds "respect
+  what is already there", and the output discipline adds proportionality and "a hypothesis is not a
+  result".
+- Docs and manifests updated throughout: 36 skills, 7 subagents, the end-to-end workflow and the
+  role table in `README.md`, new workflows in `docs/USAGE.md`, the design-log and agent-vs-skill
+  rationale in `docs/ARCHITECTURE.md`.
+
 ## [0.1.0] — 2026-11-08
 
 First release.

@@ -2,7 +2,7 @@
 name: assets-art-style-lock
 description: Create or read the art bible that locks a project's visual style - reference images, a reusable style prompt, palette and per-dimension asset specs. Use before generating, buying or importing any asset. Every asset request must quote this file, and an unlocked style blocks asset work.
 metadata:
-  version: 0.1.0
+  version: 0.2.0
 ---
 
 # Art style lock
@@ -20,6 +20,31 @@ plugin's root directory (plugin install), or `skills/unity-skillforge-pack/` in 
 **This is a gate.** `assets-gen-2d-sprite`, `assets-gen-3d-model` and `assets-import-pipeline` all
 refuse to proceed on an unlocked style, because an unlocked style means every asset is a different
 guess and the set has to be regenerated.
+
+## The prototype exception
+
+**A gameplay prototype does not need a locked art bible.** Blocking a test of whether a mechanic
+works on a decision about how the game looks is backwards — and locking a style before the loop is
+proven often means locking the wrong one.
+
+| Allowed with no lock | Still gated on a 🟢 lock |
+| --- | --- |
+| Unity primitives — cube, capsule, sphere, plane | Any generated sprite, texture or model |
+| The built-in default material, and flat-colour materials | Any purchased or downloaded production asset |
+| Untextured blockout geometry | Final UI art, fonts and icons |
+| Debug gizmos, lines and on-screen value readouts | Anything that will ship |
+| Unstyled UI labels and buttons | |
+
+Conditions, all of them:
+
+- They live in `Assets/_Project/Prototype/` with a `PH_` prefix
+  (`PACK/rules/folder-conventions.md`).
+- They are listed in the prototype's `design/prototype-*.md`, which is what makes them findable
+  later.
+- **A placeholder never becomes production art by being renamed.** Replacing it means generating or
+  importing a real asset against this file.
+- The moment production art is wanted, this skill runs first. Do not generate "just one" sprite
+  against an unlocked style — that one sprite becomes the de-facto style, chosen by accident.
 
 ## Inputs needed
 
@@ -83,7 +108,8 @@ See `PACK/references/unity-cli.md`.
 | Mood, audience, pillars | `design/pitch.md` |
 | The file being created | `design/art-bible.md` |
 | Template to copy | `PACK/templates/game-design/art-bible.md` |
-| Where reference images go | `PACK/rules/folder-conventions.md` |
+| Where reference images and placeholders go | `PACK/rules/folder-conventions.md` |
+| What a prototype is allowed to use instead | the `design-prototype-plan` skill |
 | Colour space and material types | `PACK/references/urp-settings.md` |
 | Provider licensing caveats | `PACK/references/asset-licensing.md` |
 
@@ -99,6 +125,7 @@ See `PACK/references/unity-cli.md`.
 - [ ] The audio character line is filled.
 - [ ] The licensing and provenance table exists.
 - [ ] Status is 🟢 only if every item above holds; otherwise what is missing is stated.
+- [ ] If this was a prototype request, the placeholder exception was used instead of a rushed lock.
 
 ## Common mistakes
 
@@ -112,3 +139,7 @@ See `PACK/references/unity-cli.md`.
   unsure which applies.
 - Changing the style prompt without saying so, so old and new assets quietly stop matching.
 - Skipping the licensing table, leaving the project unable to prove it can ship commercially.
+- Blocking a prototype on a style lock it does not need, which delays the test that matters.
+- Rushing a lock so one prototype asset can be generated, so the whole game's look is decided by a
+  placeholder nobody was thinking about.
+- Letting a `PH_` placeholder survive into the shipped build because it was never recorded.

@@ -28,6 +28,11 @@ folder.**
 **If the mechanic has no spec with acceptance checks, stop and hand back to the designer.** Without
 a spec there is nothing to verify, so nothing can be marked done. Do not invent the numbers yourself.
 
+For a **prototype**, `design/prototype-<name>.md` is the spec: build only its minimum feature set,
+use its `PH_` placeholders, and verify its technical criteria. Do not quietly build the production
+version — the explicit NOT list is part of the plan, not a suggestion. Its gameplay questions are
+answered by a human playing it, never by you.
+
 Likewise, if `design/STATE.md` lists something under **Blocked / broken**, fix that first via
 `qa-fix-console-errors` rather than adding to it.
 
@@ -49,6 +54,7 @@ skills.
 | Project status and dimension | `design/STATE.md` |
 | Design map | `design/INDEX.md` |
 | The mechanic being built | `design/mechanic-*.md` (only the one for this task) |
+| The prototype being built, if this is one | `design/prototype-*.md` (only the one for this task) |
 | Decisions you must respect | `design/tech-decisions.md` |
 | Style rules | `PACK/rules/csharp-style.md` |
 | Layer and assembly rules | `PACK/rules/architecture.md` |
@@ -80,6 +86,8 @@ You do **not** write design documents, except handing off to `design-update-stat
 - **Compiling is not done.** Run `qa-playmode-check` against the spec's acceptance checks.
 - If the spec is wrong or impossible, **stop and say so**. Do not silently implement something else.
 - Remove every temporary `Debug.Log` you added.
+- Prototype placeholders go to `Assets/_Project/Prototype/` with a `PH_` prefix. Never generate art
+  to stand in for art — a primitive is free and is obviously temporary.
 - Keep the diff minimal. Do not reformat unrelated files.
 
 ## Handoff output format
@@ -87,7 +95,8 @@ You do **not** write design documents, except handing off to `design-update-stat
 ```
 ## Gameplay coder handoff
 
-**Mechanic:** <name>  (spec: design/mechanic-<name>.md)
+**Mechanic:** <name>  (spec: design/mechanic-<name>.md, or design/prototype-<name>.md)
+**Built as:** production | prototype (placeholders, minimum feature set)
 
 **Wrote:**
 - <file> — <one line>

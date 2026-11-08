@@ -76,7 +76,7 @@ for dest in "$TARGET/.claude/skills" "$TARGET/.agents/skills"; do
 done
 
 # Subagents are a Claude Code concept; Codex has no equivalent directory, and
-# docs/CODEX.md ships the same six roles as copy-paste prompts instead.
+# docs/CODEX.md ships the same seven roles as copy-paste prompts instead.
 if [[ -d "$PACK_ROOT/agents" ]]; then
   run mkdir -p "$TARGET/.claude/agents"
   for agent in "$PACK_ROOT"/agents/*.md; do
