@@ -321,6 +321,7 @@ owns that migration. See [docs/INSTALL.md](docs/INSTALL.md#already-have-a-unity-
 
 | Doc | Read it for |
 | --- | --- |
+| [docs/GETTING-STARTED.md](docs/GETTING-STARTED.md) | **Start here.** A new game end to end: setup, idea, design, structure, assets, code, tests |
 | [docs/INSTALL.md](docs/INSTALL.md) | Prerequisites, both install paths, connecting Unity, verifying it works |
 | [docs/USAGE.md](docs/USAGE.md) | Example prompts per workflow, and the `design/` contract |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | The token tiers, why skills are flat, how routing works |

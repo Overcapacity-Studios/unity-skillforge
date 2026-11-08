@@ -1,5 +1,9 @@
 # Usage
 
+> New to the pack? Read [GETTING-STARTED.md](GETTING-STARTED.md) first — it walks a new game
+> from setup through idea, design, structure, assets, code and tests. This page is the
+> prompt-per-workflow reference you come back to.
+
 ## The contract: `design/` is the game, this pack is the method
 
 Every skill starts by reading **`design/STATE.md`** and **`design/INDEX.md`** — and nothing else
