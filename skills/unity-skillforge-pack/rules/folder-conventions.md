@@ -28,6 +28,7 @@ Assets/
       Items/  Levels/  Tuning/  EventChannels/
     Prefabs/
       Player/  Enemies/  Props/  UI/  Systems/
+    Prototype/                  # TEMPORARY placeholder assets only. PH_ prefix. Deleted, not shipped
     Scenes/
       Bootstrap.unity
       Gameplay/
@@ -55,6 +56,14 @@ design/                         # the game's own design docs — what we are bui
   the repo root, outside the Unity project, so Unity does not import it.
 - Generated assets land in the matching `Art/` folder with the generation prompt recorded in
   `design/art-bible.md`, not in a floating notes file.
+- **Prototype placeholders live in `Assets/_Project/Prototype/` and are named with a `PH_`
+  prefix** — `PH_Player.prefab`, `PH_Grey.mat`, `PH_Arena.unity`. They are the only assets allowed
+  without a locked `design/art-bible.md`: Unity primitives, the built-in default material,
+  untextured blockout geometry, debug gizmos and unstyled UI labels. The prefix and the folder exist
+  so a single search finds every one of them when it is time to replace them. Nothing in
+  `Prototype/` is production art, and **a placeholder never becomes production art by being
+  renamed** — a production asset is generated or imported properly, against the art bible. List every placeholder in the
+  prototype's `design/prototype-*.md`, so none of them survives by being forgotten.
 - Tests mirror the layer they test. A test for `Features/Player/` lives in
   `Tests/PlayMode/Player/`.
 - No scripts outside `Code/`. An `Editor/` folder is allowed inside any layer and compiles only in
@@ -73,3 +82,4 @@ design/                         # the game's own design docs — what we are bui
 | Animation clip | Subject + action | `Player_Run.anim` |
 | Material | Subject + variant | `Stone_Mossy.mat` |
 | URP asset | `URP-` + tier | `URP-Balanced.asset` |
+| Prototype placeholder | `PH_` + subject | `PH_Player.prefab` |

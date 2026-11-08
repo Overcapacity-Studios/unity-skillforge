@@ -20,11 +20,34 @@ pack was installed. See "Two Tier-0 paths" below.
 
 Skill **descriptions sit in context permanently**, for every skill installed. That is why they are
 capped at 300 characters and written to say when the skill does *and does not* apply. Claude Code
-drops descriptions from the listing once it exceeds about 1% of the context window, so with 33
+drops descriptions from the listing once it exceeds about 1% of the context window, so with 36
 skills the cap is load-bearing, not cosmetic.
 
 `design/STATE.md` is capped at 60 lines for the same reason: it is read on every single task, making
 it the most expensive file in a game project per token.
+
+### Why the decision logs are indexed, not inlined
+
+`design/decisions.md` records design decisions and grows for the life of a project, which makes it
+exactly the kind of file that would wreck the budget if it were read whole. So its shape does the
+rationing: an **Index** table of one line per decision at the top, full entries below, and a rule
+that a task reads the Index and then only the entries it touches. `STATE.md` carries a one-line
+pointer, never a copy.
+
+The split from `tech-decisions.md` is by question, not by size. `decisions.md` answers *what the
+game is* and is owned by the designer and the game-director; `tech-decisions.md` answers *how it is
+built* and is owned by the architect. One file holding both would be read by everyone for every
+task, which is the cost both files are shaped to avoid.
+
+### Why discovery and prototyping are separate skills
+
+`design-idea-discovery` and `design-prototype-plan` could both have been folded into
+`design-write-gdd`. They are not, because the three have different preconditions and different
+outputs. Discovery runs with **no Unity project, no CLI and no design folder** — it is a
+conversation, and merging it into the GDD skill is what produces the failure mode of generating a
+full design document from one sentence. Prototyping runs before an art style exists, and its output
+is a falsifiable hypothesis plus a human-filled playtest log, not a spec. Keeping them narrow is
+what lets the router load exactly one of them.
 
 ## Why skills are flat
 
@@ -121,7 +144,7 @@ that way would have its `PACK/` paths dangling — 27 distinct ones. Shaping the
 it installs as a sibling of the skills that cite it, and a sibling path resolves on every route.
 
 The alternative — giving each skill its own copy of what it cites, as Unity's official skills do —
-was rejected on the numbers: `references/unity-cli.md` alone is cited by 32 of the 34 skills, so
+was rejected on the numbers: `references/unity-cli.md` alone is cited by 32 of the 37 skills, so
 bundling would turn 70 KB into about 700 KB and 24 files into roughly 155 copies, and a single
 correction would then need applying in 32 places.
 
@@ -163,6 +186,22 @@ Unity's official plugin covers 13 of our topics. Rather than drop them, each ove
 That keeps the pack coherent standalone while avoiding a second, drifting copy of Unity's
 documentation. The cost is real: those 13 need review whenever Unity updates theirs.
 
+## Why the game-director is an agent, not a skill
+
+The seventh role is a subagent rather than a skill, because what it does is a *stance* applied
+across many documents, not a procedure with a fixed output. A review of a mechanic against the whole
+game reads the pillars, the loop, two or three related specs and the decision index, in an order
+that depends on the question — which is a role with a read list, not a numbered recipe.
+
+It also needs the separation a subagent gives: a fresh context window, so the review is not
+coloured by the implementation conversation that prompted it, and a fixed handoff format so its
+recommendation arrives with its tradeoffs and an explicit "needs your approval" line attached. The
+skills it is allowed to run (`design-decision-log`, `design-prototype-plan`, `design-scope-cut`) are
+where its conclusions get written down.
+
+The hard limit on the role is in its body, not its tools: it may not record its own recommendation
+as approved. The user is the only source of `APPROVED`.
+
 ## Why subagents do not preload skills
 
 Claude Code's subagent frontmatter has a `skills:` key, but it **injects full skill content**, not
@@ -181,7 +220,7 @@ rejects `allowed-tools` — which is a *skill* key, not an agent key.
 ```
 AGENTS.md              Tier 0: hard rules + routing table (≤150 lines)
 CLAUDE.md              only "@AGENTS.md"
-skills/<name>/SKILL.md 33 task skills, flat, prefix-grouped
+skills/<name>/SKILL.md 36 task skills, flat, prefix-grouped
 skills/unity-skillforge-pack/
                        the shared Tier 2 data, shaped as a skill so `npx skills` carries it
     references/        Unity CLI, versions, official skills, URP, input, Meshy, MCP, asset licensing
@@ -189,7 +228,7 @@ skills/unity-skillforge-pack/
     templates/csharp/  copy-ready .cs.txt
     templates/game-design/  the design/ contract
     scripts/           slice-spritesheet.py (the one script a skill invokes)
-agents/*.md            6 subagents (Claude Code; Codex uses docs/CODEX.md)
+agents/*.md            7 subagents (Claude Code; Codex uses docs/CODEX.md)
 scripts/               validate-skills.py, install.sh/.ps1, uninstall.sh, sync-agents-dir.sh
 .claude-plugin/        plugin.json + marketplace.json (repo is both)
 .codex-plugin/         plugin.json

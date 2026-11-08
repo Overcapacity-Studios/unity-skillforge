@@ -13,8 +13,10 @@ needs it, and only the rows it needs.
 
 | Document | Read it when | Path |
 | --- | --- | --- |
+| Concept | The game is still pre-pitch, or you need the original hypothesis | `design/concept.md` |
 | Pitch | You need the fantasy, audience, scope or pillars | `design/pitch.md` |
-| Art bible | **Before generating or importing any asset** | `design/art-bible.md` |
+| Design decisions | **Before proposing a feature** — read its Index table, not the whole file | `design/decisions.md` |
+| Art bible | **Before generating or importing production art** | `design/art-bible.md` |
 | Technical decisions | Choosing a package, system or pattern | `design/tech-decisions.md` |
 
 ## Mechanics
@@ -24,6 +26,14 @@ needs it, and only the rows it needs.
 | Mechanic | Status | Path |
 | --- | --- | --- |
 | <Movement> | spec'd / built / tuned | `design/mechanic-movement.md` |
+
+## Prototypes
+
+<!-- One row per prototype plan. File per prototype: design/prototype-<name>.md -->
+
+| Prototype | Tests | Status | Path |
+| --- | --- | --- | --- |
+| <Dash timing> | <the dash feels committing> | planned / built / played / concluded | `design/prototype-dash.md` |
 
 ## Content
 

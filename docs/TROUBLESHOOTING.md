@@ -129,8 +129,8 @@ Or disable packs you are not using.
 never loads. Two remedies: start each session with **"Use the unity-game-router skill"**, which
 carries the same hard rules and routing table, or run `./scripts/install.sh` so `AGENTS.md` loads
 automatically. The second also creates `design/STATE.md`, whose absence on the plugin path is the
-other thing people notice — the router handles it by routing you to `design-write-gdd`, which is a
-first prompt rather than a failure.
+other thing people notice — the router handles it by routing you to `design-idea-discovery` or
+`design-write-gdd`, which is a first prompt rather than a failure.
 
 **On Codex:** `AGENTS.md` is read **once at session start** — restart after editing it. And a file
 closer to your working directory **overrides** one further up, so a stale `AGENTS.md` in a

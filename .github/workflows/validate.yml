@@ -21,6 +21,11 @@ jobs:
       - name: Validate skills, agents, limits and references
         run: python3 scripts/validate-skills.py
 
+      # Static checks on the pack's own routing and honesty contracts (TEST A-F).
+      # These run no agent and contact no Unity Editor.
+      - name: Workflow contract tests
+        run: python3 scripts/test-workflows.py
+
   manifests:
     name: Plugin manifests
     runs-on: ubuntu-latest
@@ -115,13 +120,29 @@ jobs:
           print(f"ok: {checked} PACK references resolve")
           PY
 
+      - name: New design templates and skills land on an install
+        run: |
+          set -euo pipefail
+          for tmpl in STATE.md INDEX.md concept.md pitch.md decisions.md mechanic.md \
+                      prototype.md art-bible.md tech-decisions.md; do
+            test -f "/tmp/game/.unity-skillforge/templates/game-design/$tmpl"
+          done
+          for s in design-idea-discovery design-prototype-plan design-decision-log; do
+            test -f "/tmp/game/.claude/skills/$s/SKILL.md"
+            test -f "/tmp/game/.agents/skills/$s/SKILL.md"
+          done
+          # design/ gets only the two files the installer owns; the skills create the rest.
+          test ! -f /tmp/game/design/concept.md
+          test ! -f /tmp/game/design/decisions.md
+          echo "ok: templates present, new skills installed, design/ untouched beyond STATE+INDEX"
+
       - name: Codex role files land where CODEX.md says they do
         run: |
           set -euo pipefail
-          for role in designer architect gameplay-coder asset-producer qa reviewer; do
+          for role in game-director designer architect gameplay-coder asset-producer qa reviewer; do
             test -f "/tmp/game/.unity-skillforge/agents/$role.md"
           done
-          echo "ok: all six role files present at .unity-skillforge/agents/"
+          echo "ok: all seven role files present at .unity-skillforge/agents/"
 
       - name: design/ files are created per file, not per directory
         run: |

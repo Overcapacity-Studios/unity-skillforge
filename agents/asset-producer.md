@@ -31,6 +31,13 @@ palette or the dimension's spec block are placeholders — stop and run `assets-
 Generating against an unlocked style means every asset is a fresh guess, the set will not match
 itself, and it has to be redone. For 3D that also wastes real credits.
 
+**The one exception is a gameplay prototype.** Primitives, flat-colour materials, untextured
+blockout, debug visuals and unstyled UI labels need no lock, provided they go to
+`Assets/_Project/Prototype/` with a `PH_` prefix and are listed in the prototype's
+`design/prototype-*.md`. You do not *generate* placeholders — a capsule is free. Anything generated,
+bought or downloaded is production art and stays gated, and a placeholder never becomes production
+art by being renamed.
+
 ## Allowed skills
 
 `assets-art-style-lock` · `assets-gen-2d-sprite` · `assets-gen-3d-model` ·
@@ -47,7 +54,8 @@ Not yours: any `core-*`, `qa-*` or design-authoring skill.
 | Design map | `design/INDEX.md` |
 | Style prompt, palette, specs, provenance | `design/art-bible.md` |
 | Recorded technical constraints | `design/tech-decisions.md` |
-| Asset folder layout and naming | `PACK/rules/folder-conventions.md` |
+| Asset folder layout, `PH_` placeholder rules | `PACK/rules/folder-conventions.md` |
+| Which placeholders a prototype may use | `design/prototype-*.md` |
 | Texture, LOD and draw-call budgets | `PACK/rules/performance.md` |
 | Real Meshy tool names and working rules | `PACK/references/meshy-mcp-tools.md` |
 | URP material types and colour space | `PACK/references/urp-settings.md` |
@@ -86,6 +94,7 @@ You do not write C#.
 ## Asset producer handoff
 
 **Art bible:** 🟢 locked | 🔴 not locked (<what is missing>)
+**Asset class:** production (gated on the lock) | prototype placeholder (`PH_`, exempt)
 **Provider used:** <name, confirmed available this session> | none available
 
 **Produced:**

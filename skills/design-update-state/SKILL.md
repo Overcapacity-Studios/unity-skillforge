@@ -2,7 +2,7 @@
 name: design-update-state
 description: Update the design folder's STATE.md and INDEX.md at the end of a task so the next agent starts from the truth - status, what is in progress, what is next and what is broken. Run at the end of every task. STATE.md is the first file every skill reads.
 metadata:
-  version: 0.1.0
+  version: 0.2.0
 ---
 
 # Update project state
@@ -29,27 +29,36 @@ Also use when `STATE.md` has drifted from reality and needs reconciling.
 ## Steps
 
 1. Read `design/STATE.md` and `design/INDEX.md`.
-2. Update the **status table** honestly. Use the real rung, not the hopeful one:
+2. Update the **Stage** field if this task moved the project: `concept` → `prototype` →
+   `production` → `polish` → `shipped`. Stage moves on evidence, not intent: `prototype` →
+   `production` needs a prototype that a human actually played and concluded. A project with no
+   Stage field is an older one — add it as `production` rather than guessing backwards.
+3. Update the **status table** honestly. Use the real rung, not the hopeful one:
    `not started` → `prototyped` (exists, not verified) → `playable` (verified via
    `qa-playmode-check`) → `tuned` (feel targets met). Something that merely compiles is
    `prototyped`, never `playable`.
-3. Move finished items into **Done**, one line each. Keep them terse; this is not a changelog.
-4. Set **In progress** to the single thing now being worked on, or empty it. If it lists more than
+4. Move finished items into **Done**, one line each. Keep them terse; this is not a changelog.
+5. Set **In progress** to the single thing now being worked on, or empty it. If it lists more than
    one item, that is a problem to name, and `design-scope-cut` is the fix.
-5. Re-order **Next**. Put the actual next slice first, small enough to finish in one session. Drop
+6. Re-order **Next**. Put the actual next slice first, small enough to finish in one session. Drop
    anything that this task made unnecessary.
-6. Update **Blocked / broken** precisely: the error text, where it appears, and what it blocks.
+7. Update **Blocked / broken** precisely: the error text, where it appears, and what it blocks.
    **"Nothing" is a valid and valuable answer** — write it rather than leaving a stale entry.
-7. Add any new constraint to **Decisions that constrain new work**, one line, pointing at
-   `design/tech-decisions.md` for the detail. If this task made a real technical decision, write the
-   full entry there too — that log is append-only and never rewritten.
-8. Update `design/INDEX.md` if this task created a design document, changed a mechanic's status, or
-   cut something. **A document with no row in `INDEX.md` is invisible to every agent.**
-9. Set the **Updated** date on both files.
-10. Keep `STATE.md` **under 60 lines**. It is read on every single task, making it the most
+8. Add any new constraint to **Decisions that constrain new work** as **one line naming the
+   entry**, never a copy of it. Technical decisions get their full entry in
+   `design/tech-decisions.md` (the `architect`); design decisions go through `design-decision-log`
+   into `design/decisions.md`. Both logs are append-only and never rewritten.
+9. Update `design/INDEX.md` if this task created a design document, changed a mechanic's or
+   prototype's status, or cut something. **A document with no row in `INDEX.md` is invisible to
+   every agent.** A prototype's status is `planned` → `built` → `played` → `concluded`, and
+   `played` means a human played it.
+   **Never record a playtest outcome the user did not report.** Playtest observations live in
+   `design/prototype-*.md` and come from a human; "not played yet" is the correct entry otherwise.
+10. Set the **Updated** date on both files.
+11. Keep `STATE.md` **under 60 lines**. It is read on every single task, making it the most
     expensive file in the project per token. If it is growing, the cause is usually history that
     belongs in git or detail that belongs in a mechanic spec.
-11. Re-read what you wrote as if you were the next agent with no memory of this session. If it does
+12. Re-read what you wrote as if you were the next agent with no memory of this session. If it does
     not tell them where to start, it is not finished.
 
 ## Unity CLI commands used
@@ -72,12 +81,17 @@ Do not record a status you did not verify. See `PACK/references/unity-cli.md`.
 | The index being updated | `design/INDEX.md` |
 | Decision log, for new constraints | `design/tech-decisions.md` |
 | Mechanic whose status changed | `design/mechanic-*.md` |
+| Design decision log, for new constraints | `design/decisions.md` |
+| Prototype whose status changed | `design/prototype-*.md` |
+| Where a design decision is written | the `design-decision-log` skill |
 | Verification standard for "playable" | the `qa-playmode-check` skill |
 | Fix for too many in-progress items | the `design-scope-cut` skill |
 
 ## Done checklist
 
+- [ ] Stage reflects reality, and moved only on evidence.
 - [ ] The status table uses the real rung; nothing that only compiles is marked `playable`.
+- [ ] No playtest result was recorded that a human did not report.
 - [ ] Done lists finished work, one terse line each.
 - [ ] In progress names at most one item, or is empty.
 - [ ] Next is re-ordered, and its first item fits in one session.
@@ -100,3 +114,5 @@ Do not record a status you did not verify. See `PACK/references/unity-cli.md`.
 - Rewriting history in `tech-decisions.md` instead of superseding an entry.
 - Skipping this skill because the task felt small. The next agent still starts from `STATE.md`.
 - Recording a status that was never verified.
+- Advancing Stage to `production` because the prototype compiles, when nobody has played it.
+- Writing an invented playtest outcome into a prototype doc or `STATE.md`.

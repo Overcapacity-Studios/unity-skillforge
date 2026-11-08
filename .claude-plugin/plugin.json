@@ -1,7 +1,7 @@
 {
   "name": "unity-skillforge",
   "displayName": "Unity SkillForge",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Skills, subagents, rules and templates for building Unity 2D, 2.5D and 3D games with the Unity CLI. Complements Unity's official plugin instead of duplicating it.",
   "author": {
     "name": "Overcapacity Studios",

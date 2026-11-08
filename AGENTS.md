@@ -17,7 +17,9 @@ installed as a plugin, or this repo's root when working on the pack itself.
    `unity list` and `unity commands --format json`. **Never call a tool or command name you have
    not seen in that output.** Full surface: `PACK/references/unity-cli.md`.
 3. **Read `design/STATE.md` and `design/INDEX.md` first — and only those.** Never read all of
-   `design/`. Open a specific design doc only when `INDEX.md` points you at it.
+   `design/`. Open a specific design doc only when `INDEX.md` points you at it. `design/decisions.md`
+   is read as its Index table, never whole. **Respect what is already there:** an existing project
+   resumes from its `Stage`; nothing already settled gets re-proposed.
 4. **Copy a template, don't invent one.** If `PACK/templates/` has it, copy and adapt it.
 5. **Defer to Unity's official skill when it is installed.** If a `/unity:*` skill covers the
    topic, run it and contribute only our conventions on top.
@@ -26,8 +28,11 @@ installed as a plugin, or this repo's root when working on the pack itself.
    "latest", and no setting left at a default you did not state.
 7. **One mechanic at a time.** After each change run `unity recompile --strict`, then the relevant
    tests. Do not start the next mechanic while the console has errors.
-8. **No generated asset without `design/art-bible.md`.** The style lock is mandatory and every
-   asset request must quote it.
+8. **No generated production asset without `design/art-bible.md`.** The style lock is mandatory and
+   every production asset request must quote it. **Prototypes are exempt:** Unity primitives, flat
+   materials, blockout geometry, debug visuals and unstyled UI need no lock, but live in
+   `Assets/_Project/Prototype/` with a `PH_` prefix and are listed in `design/prototype-*.md`.
+   A placeholder never becomes production art by being renamed.
 9. **Never commit secrets or API keys.** Asset-provider keys live in environment variables.
 10. **Report honestly.** Anything you could not verify in a running Unity Editor must be stated as
     unverified. Never describe an import setting or PlayMode result you did not observe.
@@ -39,6 +44,7 @@ Load a skill by name. Each lives at `skills/<name>/SKILL.md` in the pack.
 | When the task is | Use skill |
 | --- | --- |
 | Unclear, or starting a new game, or you need to pick a path | `unity-game-router` |
+| Judge a feature against the whole game before building it | the `game-director` agent |
 | Write or refactor a MonoBehaviour, asmdef layout | `core-unity-script` |
 | Tunable data, config, item/level definitions | `core-scriptable-object-data` |
 | Decoupling systems, messaging between scenes | `core-event-channels` |
@@ -67,8 +73,11 @@ Load a skill by name. Each lives at `skills/<name>/SKILL.md` in the pack.
 | Check the game actually plays, not just compiles | `qa-playmode-check` |
 | Console errors, compile failures, warnings | `qa-fix-console-errors` |
 | Produce a player build | `qa-build` |
-| Turn a pitch into a design doc | `design-write-gdd` |
+| A rough idea that needs developing, or an idea to challenge | `design-idea-discovery` |
+| Turn an agreed concept into a design doc | `design-write-gdd` |
 | Specify one mechanic before coding it | `design-mechanic-spec` |
+| Test the riskiest assumption with the smallest playable thing | `design-prototype-plan` |
+| Record a design decision, or check a proposal against one | `design-decision-log` |
 | Too much scope, cut it down | `design-scope-cut` |
 | Record what changed, update project status | `design-update-state` |
 
@@ -86,12 +95,16 @@ Load a skill by name. Each lives at `skills/<name>/SKILL.md` in the pack.
 C#: `PACK/templates/csharp/` — `MonoBehaviour`, `ScriptableObject`, `StateMachine`, `EventChannel`,
 `ServiceLocator`, `EditModeTest`, `PlayModeTest` (each a `.cs.txt` file).
 
-Design docs: `PACK/templates/game-design/` — `INDEX.md`, `pitch.md`, `mechanic.md`, `art-bible.md`,
-`tech-decisions.md`, `STATE.md`.
+Design docs: `PACK/templates/game-design/` — `STATE.md`, `INDEX.md`, `concept.md`, `pitch.md`,
+`decisions.md`, `mechanic.md`, `prototype.md`, `art-bible.md`, `tech-decisions.md`.
 
 ## Output discipline
 
 - Say which skill you are following, in one line, before you act.
+- Scale the process to the change. A significant mechanic earns a `game-director` review and a spec;
+  a bug fix or a tuning value earns neither. Routing small work through design is a failure too.
+- A hypothesis is not a result. Never claim a mechanic is fun, and never write a playtest
+  observation a human did not report.
 - Prefer running a script or copying a template over generating code from scratch.
 - Keep diffs minimal: change only what the task needs, and do not reformat unrelated files.
 - End a task by updating `design/STATE.md` via `design-update-state`.

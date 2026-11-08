@@ -2,7 +2,7 @@
 name: qa-playmode-check
 description: Verify a mechanic actually plays by running it in the Unity Editor and checking it against the acceptance checks in its spec. Use before calling any gameplay work done. Compiling and passing unit tests is not evidence the game plays correctly.
 metadata:
-  version: 0.1.0
+  version: 0.2.0
 ---
 
 # Play mode check
@@ -31,14 +31,16 @@ What stays ours: the **per-mechanic acceptance checks and the honesty rule** bel
 
 ## Inputs needed
 
-- The mechanic's **Acceptance checks** list from its spec. If the spec has none, stop and run
-  `design-mechanic-spec` — you cannot verify against an unstated expectation.
+- The mechanic's **Acceptance checks** list from its spec — or, for a prototype, the **Technical
+  validation** list in `design/prototype-<name>.md`. If neither exists, stop and run
+  `design-mechanic-spec` (or `design-prototype-plan`) — you cannot verify against an unstated
+  expectation.
 - A running Unity Editor with the Pipeline package installed.
 
 ## Steps
 
 1. Read `design/STATE.md` and `design/INDEX.md`, then the mechanic spec's **Acceptance checks** and
-   **Feel** sections.
+   **Feel** sections, or the prototype plan's **Technical validation** list.
 2. Confirm the environment can actually be driven. If any of these fail, say so and stop — do not
    report a verification you could not perform:
    ```bash
@@ -47,26 +49,31 @@ What stays ours: the **per-mechanic acceptance checks and the honesty rule** bel
    unity recompile --strict --format json
    ```
 3. Start from the `Bootstrap` scene, not the gameplay scene directly. A scene that only works when
-   opened directly is a bug `core-scene-setup` covers.
-4. Enter Play Mode through the Editor tools reported by `unity list`, and drive the check. Prefer a
+   opened directly is a bug `core-scene-setup` covers. A prototype may legitimately have its own
+   `PH_` scene; start from whatever its plan names.
+4. **Verify technical criteria only.** A prototype's **Gameplay validation** questions — was it
+   understood, did it feel right, were they frustrated — are answered by a human who played it.
+   Report them as "requires a human playtest" and list them unanswered. Never answer them, and
+   never write into a prototype's playtest log.
+5. Enter Play Mode through the Editor tools reported by `unity list`, and drive the check. Prefer a
    checked-in Editor script run with `eval_file` over a long inline block.
-5. Walk the acceptance checks one at a time. For each, record the **observed** value, not the
+6. Walk the acceptance checks one at a time. For each, record the **observed** value, not the
    expected one:
    - Numeric check → read the value back from the Editor and report it.
    - Behavioural check → describe what happened.
    - Edge case → trigger it deliberately; do not assume it holds.
-6. Read the console during the run. **Any error or warning fails the check**, even if the mechanic
+7. Read the console during the run. **Any error or warning fails the check**, even if the mechanic
    looked right. Hand off to `qa-fix-console-errors`.
-7. Check the "Feel" section separately from the rules. A mechanic can satisfy every numeric rule and
+8. Check the "Feel" section separately from the rules. A mechanic can satisfy every numeric rule and
    still feel wrong; report that as a tuning item against the spec, not as a pass.
-8. Use temporary `Debug.Log` lines to observe values if you must, then **remove them**. The user did
+9. Use temporary `Debug.Log` lines to observe values if you must, then **remove them**. The user did
    not ask for logging, and leftover lines clutter the console the next agent reads.
-9. Exit Play Mode cleanly. Confirm nothing was left mutated — in particular, check no
+10. Exit Play Mode cleanly. Confirm nothing was left mutated — in particular, check no
    ScriptableObject was written to during the run, which persists in the Editor and not in a build.
-10. Report honestly, as a list of checks with pass or fail and the observed value. If you could not
+11. Report honestly, as a list of checks with pass or fail and the observed value. If you could not
     reach a running Editor, the correct report is "not verified — no Editor reachable", never an
     inferred pass.
-11. Update `design/STATE.md` via `design-update-state`: move the mechanic to Done only when every
+12. Update `design/STATE.md` via `design-update-state`: move the mechanic to Done only when every
     check passed with a clean console.
 
 ## Unity CLI commands used
@@ -91,6 +98,7 @@ compiles a statement block — no `using` directives, fully-qualified types, res
 | Project status | `design/STATE.md` |
 | Design map | `design/INDEX.md` |
 | Acceptance checks and feel targets | `design/mechanic-*.md` (named in `INDEX.md`) |
+| A prototype's technical criteria | `design/prototype-*.md` (named in `INDEX.md`) |
 | CLI surface and exit codes | `PACK/references/unity-cli.md` |
 | Official skill map | `PACK/references/official-unity-skills.md` |
 | Frame budget for the project | `PACK/rules/performance.md` |
@@ -107,6 +115,7 @@ compiles a statement block — no `using` directives, fully-qualified types, res
 - [ ] Feel was assessed separately from the numeric rules.
 - [ ] Temporary logging removed.
 - [ ] No ScriptableObject was mutated during the run.
+- [ ] A prototype's gameplay questions were reported unanswered, not answered.
 - [ ] Anything unverifiable is stated as unverified, not inferred.
 - [ ] `design/STATE.md` updated.
 
@@ -122,3 +131,5 @@ compiles a statement block — no `using` directives, fully-qualified types, res
 - Only testing the happy path and never the edge cases the spec lists.
 - Leaving the project in Play Mode, or leaving a mutated ScriptableObject behind.
 - Treating "feels fine" as a pass on the Feel section without naming the numbers you tried.
+- Answering a prototype's gameplay questions yourself. Only a human who played it can, and an
+  invented answer is what every later design decision would then rest on.

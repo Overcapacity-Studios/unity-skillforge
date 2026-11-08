@@ -12,7 +12,7 @@ cd unity-skillforge
 ./scripts/install.sh /path/to/your/game
 ```
 
-That writes `.agents/skills/<33 skills>`, the `.unity-skillforge/` Tier-2 tree, and a root
+That writes `.agents/skills/<36 skills>`, the `.unity-skillforge/` Tier-2 tree, and a root
 `AGENTS.md`.
 
 Where Codex looks for skills:
@@ -63,8 +63,8 @@ overwriting it, so your own rules survive and still load.
 | GPT-6 Astra | `gpt-6-astra` | A genuinely hard architectural problem, or a debugging session that Sol has stalled on |
 | GPT-6 Luna | `gpt-6-luna` | High-volume mechanical work; usually below what these skills need |
 
-Map it to the roles in [USAGE.md](USAGE.md): `designer`, `architect` and `reviewer` want **Sol**;
-`gameplay-coder`, `asset-producer` and `qa` want **Terra**.
+Map it to the roles in [USAGE.md](USAGE.md): `game-director`, `designer`, `architect` and
+`reviewer` want **Sol**; `gameplay-coder`, `asset-producer` and `qa` want **Terra**.
 
 Set a default in `~/.codex/config.toml`:
 
@@ -77,14 +77,15 @@ the model that made it.
 
 ## Subagents: what Codex does not have
 
-Codex has **no `agents/` directory**. The six roles in `agents/` are a Claude Code feature.
+Codex has **no `agents/` directory**. The seven roles in `agents/` are a Claude Code feature.
 
-Use them as prompts instead. `install.sh` copies all six to **`.unity-skillforge/agents/`**, and
+Use them as prompts instead. `install.sh` copies all seven to **`.unity-skillforge/agents/`**, and
 each file is self-contained — role, model hint, exact read list, allowed skills, rules and handoff
 format. Reference the file rather than pasting it, so the role stays in one place:
 
 | Role | Prompt | Model |
 | --- | --- | --- |
+| Game director | *"Follow `.unity-skillforge/agents/game-director.md`. Review the grapple hook against the whole game."* | Sol |
 | Designer | *"Follow `.unity-skillforge/agents/designer.md`. Spec the grapple hook mechanic."* | Sol |
 | Architect | *"Follow `.unity-skillforge/agents/architect.md`. Decide whether this needs a new assembly."* | Sol |
 | Gameplay coder | *"Follow `.unity-skillforge/agents/gameplay-coder.md`. Implement the mechanic in `design/mechanic-grapple.md`."* | Terra |
@@ -106,7 +107,7 @@ cross-cutting, not per-skill.
 - Codex also matches implicitly on the `description`, which is why the descriptions here state when
   a skill does *and does not* apply.
 - The initial listing is name + description + file path, capped at about 2% of the context window.
-  With 33 skills that is worth knowing; raise it if needed:
+  With 36 skills that is worth knowing; raise it if needed:
 
 ```toml
 [skills]

@@ -2,7 +2,7 @@
 name: assets-gen-2d-sprite
 description: Generate 2D sprites, tilesets or UI art with an image model, then hand them to slicing and import. Use when the project needs 2D art it does not have. Requires a locked art bible, and stays provider-agnostic so any image generator can be used.
 metadata:
-  version: 0.1.0
+  version: 0.2.0
 ---
 
 # Generate 2D sprites
@@ -23,6 +23,10 @@ Not for: importing existing art (`2d-sprite-import`), or 3D models (`assets-gen-
 Read `design/art-bible.md` first. If its status is 🔴, or the style prompt, negative prompt, palette
 or 2D specifications are placeholders, **stop and run `assets-art-style-lock`**. Generating against
 an unlocked style produces a set that does not match itself and has to be redone.
+
+The gate has one exception, and this skill is not it: a **gameplay prototype** may use marked `PH_`
+placeholders with no lock — primitives, flat colours, unstyled UI. See `design-prototype-plan`.
+Generated art is production art, so it stays gated.
 
 ## Provider
 

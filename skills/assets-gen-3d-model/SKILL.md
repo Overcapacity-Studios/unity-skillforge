@@ -2,7 +2,7 @@
 name: assets-gen-3d-model
 description: Generate, retexture, rig and animate 3D models through the Meshy MCP server, then hand the download to the import pipeline. Use when a 3D project needs a model it does not have. Requires a locked art bible and a paid Meshy plan, and generation is asynchronous.
 metadata:
-  version: 0.1.0
+  version: 0.2.0
 ---
 
 # Generate 3D models
@@ -25,6 +25,9 @@ Read `design/art-bible.md`. If its status is 🔴, or the style prompt, negative
 specifications** are placeholders, **stop and run `assets-art-style-lock`**. Generating against an
 unlocked style produces a set that does not match and has to be redone — and 3D generation costs
 real credits per attempt.
+
+If the goal is a **gameplay prototype**, do not generate at all: a capsule and a cube test the
+mechanic for free. Marked `PH_` placeholders need no lock — see `design-prototype-plan`.
 
 ## Provider: Meshy MCP
 
