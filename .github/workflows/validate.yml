@@ -112,6 +112,33 @@ jobs:
           print(f"ok: {checked} PACK references resolve")
           PY
 
+      - name: design/ files are created per file, not per directory
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/design-game && mkdir -p /tmp/design-game/design
+          echo "my notes" > /tmp/design-game/design/notes.md
+          ./scripts/install.sh /tmp/design-game > /dev/null
+          test -f /tmp/design-game/design/STATE.md   # must be created despite design/ existing
+          test -f /tmp/design-game/design/INDEX.md
+          test -f /tmp/design-game/design/notes.md   # and must not disturb what was there
+          echo "MINE" > /tmp/design-game/design/STATE.md
+          ./scripts/install.sh /tmp/design-game > /dev/null
+          grep -q MINE /tmp/design-game/design/STATE.md   # an existing file is never overwritten
+          echo "ok: per-file, non-destructive"
+
+      - name: uninstall.sh strips its own AGENTS.md section and nothing else
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/agents-game && mkdir -p /tmp/agents-game
+          printf '# My rules\n\nUse 4 spaces.\n\n## My section\n\nKeep me.\n' > /tmp/agents-game/AGENTS.md
+          ./scripts/install.sh /tmp/agents-game > /dev/null
+          grep -q 'unity-skillforge' /tmp/agents-game/AGENTS.md
+          ./scripts/uninstall.sh /tmp/agents-game --yes > /dev/null
+          ! grep -q 'unity-skillforge' /tmp/agents-game/AGENTS.md   # no dangling pointer
+          grep -q 'Use 4 spaces' /tmp/agents-game/AGENTS.md         # user content intact
+          grep -q 'Keep me' /tmp/agents-game/AGENTS.md
+          echo "ok: section stripped, user rules intact"
+
       - name: uninstall.sh removes only what the pack owns
         run: |
           set -euo pipefail

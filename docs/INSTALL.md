@@ -105,7 +105,7 @@ The Pipeline package exposes a **localhost-only** HTTP API. Nothing is exposed t
 | Ships the 33 skills | yes | yes |
 | Ships the 6 subagents | yes | yes |
 | **Loads the rules automatically** | **no** (see below) | **yes**, via `AGENTS.md` |
-| Creates `design/STATE.md` | no | yes |
+| Creates `design/STATE.md` | no | yes (never overwrites an existing one) |
 | Updates | `/plugin marketplace update` | re-run the script |
 
 **Use Path B unless you have a reason not to.** It is the only path that works for Codex, and the
@@ -118,8 +118,8 @@ the rules loaded: install the plugin, then run `./scripts/install.sh` as well.
 ### Path A — Claude Code plugin
 
 > **Requires this repo to be published and public on GitHub.** If the commands below report that the
-> repository cannot be found, it is not published yet — use Path B with a local clone, which is
-> fully supported.
+> repository cannot be found, it is not published yet. Use Path B instead — and if you already have
+> this folder on disk, Path B needs no clone at all, just `./scripts/install.sh`.
 
 ```
 /plugin install unity-skillforge --marketplace Overcapacity-Studios/unity-skillforge
@@ -155,10 +155,20 @@ Auto-update is **off by default** for third-party marketplaces. Refresh with:
 
 ### Path B — install into your game repo (works for Codex, and for both tools at once)
 
+**If you already have this folder on disk** — you cloned it earlier, a colleague sent it, or you are
+reading this file from inside it — skip the clone entirely:
+
+```bash
+cd /path/to/unity-skillforge          # wherever this folder lives
+./scripts/install.sh /path/to/your/game --dry-run   # preview first
+./scripts/install.sh /path/to/your/game
+```
+
+Otherwise clone it first (needs the repo to be published):
+
 ```bash
 git clone https://github.com/Overcapacity-Studios/unity-skillforge.git
 cd unity-skillforge
-./scripts/install.sh /path/to/your/game --dry-run   # preview first
 ./scripts/install.sh /path/to/your/game
 ```
 
@@ -185,15 +195,18 @@ your-game/
   .claude/agents/<6 agents>       # Claude Code subagents
   .agents/skills/<33 skills>      # Codex  (NOT .codex/skills)
   .unity-skillforge/              # the read-by-path tier: references, rules, templates, scripts, docs
+  .unity-skillforge/AGENTS.md     # the rules file your AGENTS.md points at
   AGENTS.md                       # Tier 0 rules (appended to, never overwritten)
   CLAUDE.md                       # contains only @AGENTS.md
-  design/STATE.md, design/INDEX.md
+  design/STATE.md, design/INDEX.md # each created only if absent; yours are never overwritten
 ```
 
 Two terms used above, since the installer prints them at you:
 
 - **Tier 0** — the rules that load on *every* task: `AGENTS.md`. Deliberately short (under 150
   lines) because you pay for it constantly.
+- **Tier 1** — a single skill's `SKILL.md`, loaded only when your task matches it. Capped at 200
+  lines.
 - **Tier 2** — `references/`, `rules/`, `templates/`: read **only** when a skill names the exact
   file. This is how 33 skills and a few thousand lines of reference cost nearly nothing until used.
 
@@ -209,8 +222,8 @@ that needs Developer Mode or an elevated shell, which is why copying is the defa
 
 ### Should you commit all this?
 
-The installer copies the skills **twice** (once per tool) plus the Tier 2 tree, so it adds a few
-hundred files. Both answers are defensible:
+The installer copies the skills **twice** (once per tool) plus the Tier 2 tree — about 115 files in
+total. Both answers are defensible:
 
 - **Commit it** if your team shares one agent setup. Everyone gets the same skills and rules at the
   same version with no setup step, which is usually what you want on a team.
@@ -255,6 +268,20 @@ unity mcp configure --list
 
 ## 6. Verify the whole thing
 
+First, an offline check that needs no Editor and no agent — count what landed:
+
+```bash
+ls -1 .claude/skills | wc -l     # expect 33
+ls -1 .agents/skills | wc -l     # expect 33  (Codex; harmless if you only use Claude Code)
+ls -1 .claude/agents | wc -l     # expect 6
+ls -1 .unity-skillforge          # expect: AGENTS.md docs references rules scripts templates
+```
+
+If those numbers are right, the pack is installed correctly and anything else that goes wrong is
+Unity-side or agent-side.
+
+Then the Unity side:
+
 ```bash
 unity status                              # Editor reachable
 unity list                                # the tools your Editor actually registers
@@ -263,9 +290,11 @@ unity recompile --strict --format json    # expect "success": true
 
 Then check the pack itself, using the prompt that matches how you installed:
 
-- **Path B** (or both paths): *"Read design/STATE.md and tell me what this project is."* It should
-  read exactly those two files and report the project state. If it starts reading the whole repo,
-  the rules are not loaded — see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
+- **Path B** (or both paths): *"Read design/STATE.md and design/INDEX.md and tell me what this
+  project is."* On a fresh install those are **unfilled templates**, so the correct answer is
+  roughly *"a blank project template — no game defined yet, dimension not chosen"*. That is a pass.
+  A failure looks like the agent reading the whole repo, or dozens of files, instead of those two —
+  which means the rules are not loaded; see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
 - **Path A only**, where `design/` does not exist yet: *"Use the unity-game-router skill."* It should
   tell you there is no `design/` folder and offer to create one. That is the correct response, not
   an error.
@@ -306,5 +335,10 @@ full map and other packs worth adding.
 python3 scripts/validate-skills.py    # structural checks; must exit 0
 claude plugin validate .              # manifest checks
 ```
+
+`claude plugin validate` reports one expected warning — *"CLAUDE.md at the plugin root is not
+loaded as project context."* That is correct and deliberate: `CLAUDE.md` serves the Path B install,
+and on the plugin path the `unity-game-router` skill carries the rules instead. You did not break
+anything. See [ARCHITECTURE.md](ARCHITECTURE.md).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).

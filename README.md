@@ -39,11 +39,19 @@ claims a Play Mode result it did not observe, and never generates art before you
 
 ## Quickstart
 
-> **Note:** the `/plugin` commands below need this repo published and public on GitHub. Until then,
-> use the local clone path — it is the fully supported route and the one Codex uses anyway.
+> **Already have this folder on disk?** Skip straight to Step 2's second line:
+> `./scripts/install.sh /path/to/your/game`. That is all the install is.
+>
+> The `/plugin` and `git clone` commands below need this repo published and public on GitHub. If
+> they report that the repository cannot be found, it is not published yet — running the installer
+> from your existing copy works regardless, and is the same route Codex uses.
 
 **Step 1 — connect Unity.** Needed for every path, and free: no Unity AI subscription, no Unity
 Cloud link.
+
+You need an existing Unity project — this pack works on one, it does not create one. If you have
+none, make a **Universal 3D** or **Universal 2D** project on Unity 6.3 LTS in Unity Hub first; that
+gives you URP. ([details](docs/INSTALL.md#0-if-you-do-not-have-a-unity-project-yet))
 
 ```bash
 curl -fsSL https://unity.com/install.sh | bash   # macOS/Linux. Windows: winget install Unity.CLI
@@ -57,11 +65,18 @@ The Unity CLI is currently **beta** (`1.0.0-beta.x`) and Unity labels it experim
 
 **Step 2 — install the pack.** Choose by which agent you use:
 
+Works for Claude Code **and** Codex, and loads the rules automatically. Recommended.
+
 ```bash
-# Works for Claude Code AND Codex, and loads the rules automatically. Recommended.
+# macOS / Linux. Skip the clone if you already have this folder.
 git clone https://github.com/Overcapacity-Studios/unity-skillforge.git
 cd unity-skillforge
 ./scripts/install.sh /path/to/your/game        # --dry-run to preview first
+```
+
+```powershell
+# Windows PowerShell, from the same folder. Note the switch syntax: -DryRun, not --dry-run.
+.\scripts\install.ps1 C:\dev\MyGame
 ```
 
 <details>
@@ -101,8 +116,8 @@ Full details, including an existing project and what to commit:
 | **Router** | The one skill to start with when you are unsure. It reads your project state and picks the others |
 | **Dimension** | Whether your game is **2D, 2.5D or 3D**. Recorded once in `design/STATE.md`; it decides camera, renderer, physics and art cost |
 | **`design/`** | A folder in *your game repo* holding what you are building — status, pitch, art style, one file per mechanic. The pack reads it; you own it |
-| **Tier 0 / Tier 2** | Tier 0 is always loaded (the rules). Tier 2 is read only when a skill names the exact file. This is how the pack stays cheap in context |
-| **`PACK/`** | How skills refer to their own files, wherever they are installed |
+| **Tier 0 / 1 / 2** | How the pack rations your context. Tier 0 (`AGENTS.md`) is always loaded; Tier 1 is a skill, loaded only when the task matches; Tier 2 (`references/`, `templates/`) is read only when a skill names the exact file |
+| **`PACK/`** | How a skill refers to the pack's own files. In your game repo it means the `.unity-skillforge/` folder the installer creates |
 | **Unity CLI** | The `unity` command. How the agent drives your Editor — compile, test, build |
 | **MCP** | A protocol some agents use to reach tools. **You almost certainly do not need it**: Claude Code and Codex run `unity` directly |
 
@@ -205,8 +220,8 @@ install/uninstall test.
 
 **Nothing in this repo has been executed against a running Unity Editor**, so every `unity` command,
 import setting and Play Mode check is documented from Unity's own docs, not observed. The Unity CLI
-is beta and `unity --help` is authoritative for your version. See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) if a
-command behaves differently on your install, and `unity --help` is authoritative for your version.
+is beta, so `unity --help` is authoritative for your version. See
+[docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) if a command behaves differently on your install.
 
 MIT licensed. Unity's own skills are under the Unity Companion License and are linked, never
 vendored.

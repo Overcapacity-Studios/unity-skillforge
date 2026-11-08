@@ -79,13 +79,36 @@ else
   fi
 fi
 
+# Remove the section install.sh appended to an AGENTS.md that already existed.
+# Leaving it behind points the agent at a directory we just deleted, and it would
+# try to read it every session.
+AGENTS_FILE="$TARGET/AGENTS.md"
+if [[ -f "$AGENTS_FILE" ]] && grep -q '^## Unity rules (unity-skillforge)$' "$AGENTS_FILE"; then
+  if [[ "$DRY_RUN" == 1 ]]; then
+    echo "would: remove the '## Unity rules (unity-skillforge)' section from $AGENTS_FILE"
+  else
+    python3 - "$AGENTS_FILE" <<'STRIP'
+import re, sys
+path = sys.argv[1]
+text = open(path, encoding="utf-8").read()
+# The section runs from its heading to the next top-level heading, or end of file.
+new = re.sub(r"\n*^## Unity rules \(unity-skillforge\)$.*?(?=^## |\Z)",
+             "\n\n", text, flags=re.S | re.M)
+new = re.sub(r"\n{3,}", "\n\n", new)
+if new != text:
+    open(path, "w", encoding="utf-8").write(new.rstrip() + "\n")
+    print("  removed the unity-skillforge section from AGENTS.md")
+STRIP
+  fi
+fi
+
 echo
 cat <<'MANUAL'
 Left in place deliberately — review and remove by hand if you want them gone:
 
   design/          YOUR game's design documents. Never removed by this script.
   AGENTS.md        If the installer created it, it is this pack's rules file and is safe to
-                   delete. If it already existed, the installer only APPENDED a
-                   "## Unity rules (unity-skillforge)" section — remove that section only.
+                   delete. If it already existed, the appended "## Unity rules" section has
+                   been removed for you and your own rules are untouched.
   CLAUDE.md        Contains just "@AGENTS.md" if the installer wrote it.
 MANUAL

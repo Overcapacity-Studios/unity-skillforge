@@ -119,24 +119,32 @@ APPEND
   echo
 fi
 
-# 4. The design/ contract, if the repo does not have one yet.
-if [[ ! -d "$TARGET/design" ]]; then
-  echo "design/ (the game's own docs: what we are building)"
-  run mkdir -p "$TARGET/design"
-  for template in STATE.md INDEX.md; do
+# 4. The design/ contract. Checked per FILE, not per directory: a repo may already
+#    have a design/ folder of its own, and the skills still need STATE.md and
+#    INDEX.md to exist. An existing file is never overwritten.
+echo "design/ (the game's own docs: what we are building)"
+run mkdir -p "$TARGET/design"
+created_any=0
+for template in STATE.md INDEX.md; do
+  if [[ -f "$TARGET/design/$template" ]]; then
+    echo "  design/$template already exists, leaving it alone"
+  else
     run cp "$PACK_ROOT/templates/game-design/$template" "$TARGET/design/$template"
     echo "  design/$template"
-  done
+    created_any=1
+  fi
+done
+if [[ "$created_any" == 1 ]]; then
   echo "  Fill these in with the design-write-gdd skill. pitch.md, art-bible.md,"
   echo "  mechanic.md and tech-decisions.md are copied by the skills that own them."
-else
-  echo "design/ already exists, leaving it alone"
 fi
 echo
 
 cat <<'NEXT'
 Next steps
-  1. Install the Unity CLI and the Pipeline package:
+
+  1. If you have not already connected Unity (do this before asking the agent to
+     touch the Editor):
        curl -fsSL https://unity.com/install.sh | bash     # or: brew install --cask unity-cli
        unity --version && unity auth login
        unity pipeline install        # with the project open in Unity 6.3 LTS or later
@@ -144,7 +152,8 @@ Next steps
   2. Strongly recommended, and complementary rather than overlapping:
        /plugin marketplace add Unity-Technologies/unity-agent-plugin
        /plugin install unity@unity-agent-plugin
-  3. Start with:  "Use the unity-game-router skill" or fill in design/STATE.md.
+  3. Your first prompt, literally:
+       "Use the unity-game-router skill. I want to build <your game in one sentence>."
 
 Docs: .unity-skillforge/docs/INSTALL.md and .unity-skillforge/docs/USAGE.md
 NEXT
