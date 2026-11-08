@@ -39,6 +39,8 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $PackRoot = Split-Path -Parent $PSScriptRoot
+# Shared Tier 2 data lives in the companion skill so `npx skills add` carries it.
+$DataSkill = Join-Path $PackRoot 'skills\unity-skillforge-pack' 
 
 if (-not (Test-Path -LiteralPath $Target -PathType Container)) {
   throw "target directory does not exist: $Target"
@@ -110,7 +112,6 @@ Write-Host "Tier 2 (read by path) -> $PackDir"
 New-Dir $PackDir
 # references/, rules/, templates/ and the skill-support scripts live inside the
 # companion data skill so that `npx skills add` carries them.
-$DataSkill = Join-Path $PackRoot 'skills\unity-skillforge-pack'
 foreach ($dir in @('references', 'rules', 'templates', 'scripts')) {
   $source = Join-Path $DataSkill $dir
   if (Test-Path -LiteralPath $source) {
@@ -173,7 +174,7 @@ if (-not (Test-Path -LiteralPath $designDir)) {
   Write-Host "design\ (the game's own docs: what we are building)"
   New-Dir $designDir
   foreach ($template in @('STATE.md', 'INDEX.md')) {
-    Copy-Entry (Join-Path $PackRoot "templates\game-design\$template") (Join-Path $designDir $template) $false
+    Copy-Entry (Join-Path $DataSkill "templates\game-design\$template") (Join-Path $designDir $template) $false
     Write-Host "  design\$template"
   }
   Write-Host "  Fill these in with the design-write-gdd skill. pitch.md, art-bible.md,"

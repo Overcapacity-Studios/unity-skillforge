@@ -41,6 +41,10 @@ fi
 
 run() { if [[ "$DRY_RUN" == 1 ]]; then echo "  would: $*"; else "$@"; fi; }
 
+# references/, rules/, templates/ and the skill-support scripts live inside the
+# companion data skill so that `npx skills add` carries them; agents/ is at the root.
+DATA_SKILL="$PACK_ROOT/skills/unity-skillforge-pack"
+
 echo "Installing unity-skillforge"
 echo "  pack:   $PACK_ROOT"
 echo "  target: $TARGET"
@@ -61,9 +65,6 @@ echo
 PACK_DIR="$TARGET/.unity-skillforge"
 echo "Tier 2 (read by path) -> $PACK_DIR"
 run mkdir -p "$PACK_DIR"
-# references/, rules/, templates/ and the skill-support scripts live inside the
-# companion data skill so that `npx skills add` carries them; agents/ is at the root.
-DATA_SKILL="$PACK_ROOT/skills/unity-skillforge-pack"
 for dir in references rules templates scripts; do
   if [[ -e "$PACK_DIR/$dir" || -L "$PACK_DIR/$dir" ]]; then run rm -rf "$PACK_DIR/$dir"; fi
   if [[ "$MODE" == "symlink" ]]; then
@@ -139,7 +140,7 @@ for template in STATE.md INDEX.md; do
   if [[ -f "$TARGET/design/$template" ]]; then
     echo "  design/$template already exists, leaving it alone"
   else
-    run cp "$PACK_ROOT/templates/game-design/$template" "$TARGET/design/$template"
+    run cp "$DATA_SKILL/templates/game-design/$template" "$TARGET/design/$template"
     echo "  design/$template"
     created_any=1
   fi

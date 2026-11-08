@@ -80,8 +80,11 @@ jobs:
           ./scripts/install.sh /tmp/game --dry-run > /dev/null
           ./scripts/install.sh /tmp/game > /dev/null
           ./scripts/install.sh /tmp/game > /dev/null   # second run must not duplicate
-          test "$(ls -1 /tmp/game/.claude/skills | wc -l)" -eq "$(ls -1 skills | wc -l)"
-          test "$(ls -1 /tmp/game/.agents/skills | wc -l)" -eq "$(ls -1 skills | wc -l)"
+          # The data skill is installed to .unity-skillforge/, not the skills dirs.
+          expected=$(( $(ls -1 skills | wc -l) - 1 ))
+          test "$(ls -1 /tmp/game/.claude/skills | wc -l)" -eq "$expected"
+          test "$(ls -1 /tmp/game/.agents/skills | wc -l)" -eq "$expected"
+          test -f /tmp/game/design/STATE.md
           grep -q '# My rules' /tmp/game/AGENTS.md
           test "$(grep -c '^## Unity rules (unity-skillforge)$' /tmp/game/AGENTS.md)" -eq 1
           echo "ok: idempotent, existing AGENTS.md preserved"
