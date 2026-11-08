@@ -85,10 +85,14 @@ install.sh path, which is the one Codex users depend on.
 
 ## Why `PACK/` and `.unity-skillforge/`
 
-Skills cite Tier 2 files as `` `PACK/references/unity-cli.md` ``. `PACK/` resolves to:
+Skills cite Tier 2 files as `` `PACK/references/unity-cli.md` ``. `PACK/` resolves to whichever
+copy of the pack's files is present:
 
-- the repo root, when working on the pack itself;
-- `.unity-skillforge/` in a game repo, created by `install.sh`.
+- `.unity-skillforge/` in a game repo, created by `install.sh`;
+- the **plugin's own root directory**, when installed as a Claude Code or Codex plugin — the plugin
+  ships `references/`, `rules/`, `templates/` and `scripts/` alongside `skills/`, so the same
+  relative paths resolve there (`${CLAUDE_PLUGIN_ROOT}` names it on Claude Code);
+- the repo root, when working on the pack itself.
 
 Claude Code offers `${CLAUDE_SKILL_DIR}` and `${CLAUDE_PLUGIN_ROOT}` for this. **Codex documents no
 equivalent.** A fixed, boring path is the only mechanism that works in both tools, so the installer

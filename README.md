@@ -13,45 +13,98 @@ in `com.unity.ai.assistant`.
 
 ---
 
-## 60-second quickstart
+## What it actually does
 
-**Claude Code** — install as a plugin:
+You describe what you want in plain language. The agent picks the matching skill, follows its
+procedure, writes C# and assets into your Unity project, drives the Editor through the Unity CLI to
+compile and test, and reports what it observed.
+
+A worked example, start to finish:
+
+> **You:** "I want a 2D platformer where a courier delivers parcels across rooftops in a storm."
+>
+> The agent writes `design/pitch.md` and asks you two things it cannot guess — is this 2D, 2.5D or
+> 3D, and what should the art look like. It then builds the bootstrap scene, wires the Input System,
+> writes the movement spec with real numbers, implements it from the templates here, runs
+> `unity recompile --strict` and the tests, enters Play Mode to check the player actually jumps the
+> height the spec says, and records where things stand.
+
+Both walkthroughs trace this in full:
+[2D platformer](examples/2d-platformer-walkthrough.md) ·
+[3D third-person](examples/3d-third-person-walkthrough.md). **If you read one thing after this
+page, read a walkthrough** — it shows the real shape of the work.
+
+What it will not do: it never invents a Unity command (it asks your Editor what exists first), never
+claims a Play Mode result it did not observe, and never generates art before you have agreed a style.
+
+## Quickstart
+
+> **Note:** the `/plugin` commands below need this repo published and public on GitHub. Until then,
+> use the local clone path — it is the fully supported route and the one Codex uses anyway.
+
+**Step 1 — connect Unity.** Needed for every path, and free: no Unity AI subscription, no Unity
+Cloud link.
+
+```bash
+curl -fsSL https://unity.com/install.sh | bash   # macOS/Linux. Windows: winget install Unity.CLI
+unity --version && unity auth login
+unity pipeline install     # with your project open in Unity 6.3 LTS or later
+unity status               # should list your Editor. If it does, you are connected
+```
+
+The Unity CLI is currently **beta** (`1.0.0-beta.x`) and Unity labels it experimental;
+`unity --help` is authoritative for your installed version.
+
+**Step 2 — install the pack.** Choose by which agent you use:
+
+```bash
+# Works for Claude Code AND Codex, and loads the rules automatically. Recommended.
+git clone https://github.com/Overcapacity-Studios/unity-skillforge.git
+cd unity-skillforge
+./scripts/install.sh /path/to/your/game        # --dry-run to preview first
+```
+
+<details>
+<summary>Claude Code plugin instead (once the repo is published)</summary>
 
 ```
 /plugin install unity-skillforge --marketplace Overcapacity-Studios/unity-skillforge
 ```
 
-<details>
-<summary>On Claude Code older than 2.1.275, or to pin a version</summary>
+On Claude Code older than 2.1.275:
+`/plugin marketplace add Overcapacity-Studios/unity-skillforge` then
+`/plugin install unity-skillforge@unity-skillforge`.
 
-```
-/plugin marketplace add Overcapacity-Studios/unity-skillforge
-/plugin install unity-skillforge@unity-skillforge
-```
+The plugin ships the skills but **not** the always-on rules file, because Claude Code does not load
+a plugin's `AGENTS.md`. Open each session with *"Use the unity-game-router skill"*, or run
+`./scripts/install.sh` as well to get both.
 </details>
 
-**Codex, or a shared tree for both tools** — clone and run the installer against your game repo:
+**Step 3 — your first prompt.** Literally type this:
 
-```bash
-git clone https://github.com/Overcapacity-Studios/unity-skillforge.git
-cd unity-skillforge
-./scripts/install.sh /path/to/your/game        # --dry-run to preview, --symlink to link
-```
+> **"Use the unity-game-router skill. I want to build \<describe your game in one sentence\>."**
 
-**Connect Unity** (needed either way, and free — no Unity AI subscription):
+It will ask whether the game is 2D, 2.5D or 3D, and create the `design/` folder it works from.
 
-```bash
-curl -fsSL https://unity.com/install.sh | bash   # macOS/Linux; or: winget install Unity.CLI
-unity --version && unity auth login
-unity pipeline install     # with your project open in Unity 6.3 LTS or later
-unity status               # should list your Editor
-```
+Uninstalling: `./scripts/uninstall.sh /path/to/your/game`. It removes only this pack's files and
+never touches your `design/` folder or `Assets/`.
 
-Then ask your agent: **"Use the unity-game-router skill"**, or just describe what you want to build.
+Full details, including an existing project and what to commit:
+[docs/INSTALL.md](docs/INSTALL.md).
 
-Full details in [docs/INSTALL.md](docs/INSTALL.md).
+## Words this project uses
 
----
+| Term | Means |
+| --- | --- |
+| **Skill** | One procedure in a `SKILL.md` file. Your agent loads it only when the task matches, so 33 skills cost almost nothing until used |
+| **Subagent** | A role (designer, coder, QA...) with its own fresh context and a narrow remit |
+| **Router** | The one skill to start with when you are unsure. It reads your project state and picks the others |
+| **Dimension** | Whether your game is **2D, 2.5D or 3D**. Recorded once in `design/STATE.md`; it decides camera, renderer, physics and art cost |
+| **`design/`** | A folder in *your game repo* holding what you are building — status, pitch, art style, one file per mechanic. The pack reads it; you own it |
+| **Tier 0 / Tier 2** | Tier 0 is always loaded (the rules). Tier 2 is read only when a skill names the exact file. This is how the pack stays cheap in context |
+| **`PACK/`** | How skills refer to their own files, wherever they are installed |
+| **Unity CLI** | The `unity` command. How the agent drives your Editor — compile, test, build |
+| **MCP** | A protocol some agents use to reach tools. **You almost certainly do not need it**: Claude Code and Codex run `unity` directly |
 
 ## What you get
 
@@ -70,6 +123,11 @@ Full details in [docs/INSTALL.md](docs/INSTALL.md).
 
 **6 subagents** in `agents/` — designer, architect, gameplay-coder, asset-producer, qa, reviewer —
 each with a model hint, an exact read list and a fixed handoff format.
+
+**Costs:** the pack itself is free, and so is the Unity CLI. The only paid dependency is optional —
+`assets-gen-3d-model` uses Meshy, which needs a **paid Meshy Pro or higher** plan and spends credits
+per generation. Everything else, including all 2D and QA work, costs nothing beyond your agent.
+See [docs/ASSETS.md](docs/ASSETS.md).
 
 **Rules and templates** read by path only: `rules/` (C# style, architecture, folders, performance),
 `templates/csharp/` (MonoBehaviour, ScriptableObject, StateMachine, EventChannel, ServiceLocator,
@@ -114,6 +172,17 @@ skill by name rather than restating its procedure. The full map is in
 [references/official-unity-skills.md](references/official-unity-skills.md), which also lists other
 complementary packs worth installing.
 
+## Already have a Unity project?
+
+That is the expected case. The installer never overwrites your `AGENTS.md`, `CLAUDE.md`, `design/`
+folder or anything under `Assets/`.
+
+Two rules here are strict, and worth knowing before you start: this pack targets **URP** and the
+**new Input System**, and treats Built-in RP and legacy `UnityEngine.Input` as unsupported. That
+applies to *new* code the agent writes — it will not go and refactor your existing project unless
+you ask it to. If your project is Built-in RP today, Unity's own `/unity:migrate-birp-to-urp` skill
+owns that migration. See [docs/INSTALL.md](docs/INSTALL.md#already-have-a-unity-project).
+
 ## Documentation
 
 | Doc | Read it for |
@@ -121,7 +190,7 @@ complementary packs worth installing.
 | [docs/INSTALL.md](docs/INSTALL.md) | Prerequisites, both install paths, connecting Unity, verifying it works |
 | [docs/USAGE.md](docs/USAGE.md) | Example prompts per workflow, and the `design/` contract |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | The token tiers, why skills are flat, how routing works |
-| [docs/CODEX.md](docs/CODEX.md) | Codex setup, Sol vs Terra, AGENTS.md behaviour |
+| [docs/CODEX.md](docs/CODEX.md) | Codex setup, which GPT model to use for which role, AGENTS.md behaviour |
 | [docs/ASSETS.md](docs/ASSETS.md) | Asset providers, licensing and commercial-use caveats |
 | [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Unity not connecting, skills not triggering, version mismatches |
 | [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) | Adding a skill, and the checks it must pass |
@@ -130,9 +199,13 @@ complementary packs worth installing.
 ## Project status
 
 Version 0.1.0. Every skill, rule and reference here was written against Unity's current published
-documentation, and `scripts/validate-skills.py` enforces the structural rules on every change.
-**Nothing in this repo has been executed against a running Unity Editor**, so the Editor-driving
-steps are documented, not verified. See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) if a
+documentation. `scripts/validate-skills.py` enforces the structural rules and runs in CI
+(`.github/workflows/validate.yml`) alongside shellcheck, manifest checks and an end-to-end
+install/uninstall test.
+
+**Nothing in this repo has been executed against a running Unity Editor**, so every `unity` command,
+import setting and Play Mode check is documented from Unity's own docs, not observed. The Unity CLI
+is beta and `unity --help` is authoritative for your version. See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) if a
 command behaves differently on your install, and `unity --help` is authoritative for your version.
 
 MIT licensed. Unity's own skills are under the Unity Companion License and are linked, never

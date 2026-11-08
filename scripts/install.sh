@@ -48,11 +48,13 @@ echo "  mode:   $MODE$([[ $DRY_RUN == 1 ]] && echo ' (dry run)')"
 echo
 
 # 1. Skills and agents, into both tools' directories.
+export UNITY_SKILLFORGE_QUIET_HEADER=1
 if [[ "$DRY_RUN" == 1 ]]; then
   "$PACK_ROOT/scripts/sync-agents-dir.sh" "$TARGET" "--$MODE" --dry-run
 else
   "$PACK_ROOT/scripts/sync-agents-dir.sh" "$TARGET" "--$MODE"
 fi
+unset UNITY_SKILLFORGE_QUIET_HEADER
 echo
 
 # 2. The read-by-path tier, at the fixed path skills cite as PACK/.
@@ -68,10 +70,8 @@ for dir in references rules templates scripts; do
   fi
   echo "  $dir"
 done
-for file in AGENTS.md; do
-  if [[ -e "$PACK_DIR/$file" ]]; then run rm -f "$PACK_DIR/$file"; fi
-  run cp "$PACK_ROOT/$file" "$PACK_DIR/$file"
-done
+if [[ -e "$PACK_DIR/AGENTS.md" ]]; then run rm -f "$PACK_DIR/AGENTS.md"; fi
+run cp "$PACK_ROOT/AGENTS.md" "$PACK_DIR/AGENTS.md"
 if [[ -d "$PACK_ROOT/docs" ]]; then
   if [[ -e "$PACK_DIR/docs" || -L "$PACK_DIR/docs" ]]; then run rm -rf "$PACK_DIR/docs"; fi
   run cp -R "$PACK_ROOT/docs" "$PACK_DIR/docs"

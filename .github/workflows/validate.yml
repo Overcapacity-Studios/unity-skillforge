@@ -1,0 +1,162 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  structure:
+    name: Structure and references
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Stdlib only, by design, so there is nothing to install.
+      - name: Validate skills, agents, limits and references
+        run: python3 scripts/validate-skills.py
+
+  manifests:
+    name: Plugin manifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate manifest JSON
+        run: |
+          for f in .claude-plugin/plugin.json \
+                   .claude-plugin/marketplace.json \
+                   .codex-plugin/plugin.json \
+                   .agents/plugins/marketplace.json; do
+            python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f"
+            echo "ok: $f"
+          done
+
+      - name: Plugin name matches across manifests
+        run: |
+          python3 - <<'PY'
+          import json
+          names = {
+              f: json.load(open(f))["name"]
+              for f in (".claude-plugin/plugin.json", ".codex-plugin/plugin.json")
+          }
+          markets = {
+              f: [p["name"] for p in json.load(open(f))["plugins"]]
+              for f in (".claude-plugin/marketplace.json", ".agents/plugins/marketplace.json")
+          }
+          expected = "unity-skillforge"
+          problems = [f"{f}: {n}" for f, n in names.items() if n != expected]
+          problems += [f"{f}: {n}" for f, ns in markets.items() for n in ns if n != expected]
+          if problems:
+              raise SystemExit("plugin name mismatch:\n  " + "\n  ".join(problems))
+          print(f"ok: every manifest names {expected}")
+          PY
+
+  scripts:
+    name: Shell scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Syntax check
+        run: |
+          for f in scripts/*.sh; do bash -n "$f" && echo "ok: $f"; done
+
+      - name: ShellCheck
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+          shellcheck -S warning scripts/*.sh
+
+      - name: install.sh is idempotent and leaves existing files alone
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/game
+          printf '# My rules\n' > /tmp/game/AGENTS.md
+          ./scripts/install.sh /tmp/game --dry-run > /dev/null
+          ./scripts/install.sh /tmp/game > /dev/null
+          ./scripts/install.sh /tmp/game > /dev/null   # second run must not duplicate
+          test "$(ls -1 /tmp/game/.claude/skills | wc -l)" -eq "$(ls -1 skills | wc -l)"
+          test "$(ls -1 /tmp/game/.agents/skills | wc -l)" -eq "$(ls -1 skills | wc -l)"
+          grep -q '# My rules' /tmp/game/AGENTS.md
+          test "$(grep -c '^## Unity rules (unity-skillforge)$' /tmp/game/AGENTS.md)" -eq 1
+          echo "ok: idempotent, existing AGENTS.md preserved"
+
+      - name: Every PACK reference resolves in an installed game repo
+        run: |
+          python3 - <<'PY'
+          import os, re
+          game, pack = "/tmp/game", "/tmp/game/.unity-skillforge"
+          missing, checked = set(), 0
+          roots = [os.path.join(game, ".claude", "skills"),
+                   os.path.join(game, ".claude", "agents"),
+                   os.path.join(game, ".agents", "skills")]
+          for root in roots:
+              for dirpath, _, files in os.walk(root):
+                  for name in files:
+                      if not name.endswith(".md"):
+                          continue
+                      text = open(os.path.join(dirpath, name), encoding="utf-8").read()
+                      for cited in re.findall(r"`PACK/([^`\s]+)`", text):
+                          if any(c in cited for c in "<>*") or "..." in cited:
+                              continue
+                          checked += 1
+                          if not os.path.exists(os.path.join(pack, cited.rstrip("/"))):
+                              missing.add(cited)
+          if missing:
+              raise SystemExit(f"{len(missing)} unresolved PACK reference(s): {sorted(missing)}")
+          print(f"ok: {checked} PACK references resolve")
+          PY
+
+      - name: uninstall.sh removes only what the pack owns
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/game/.claude/skills/my-own-skill
+          echo mine > /tmp/game/.claude/skills/my-own-skill/SKILL.md
+          mkdir -p /tmp/game/design && echo mine > /tmp/game/design/pitch.md
+          ./scripts/uninstall.sh /tmp/game --yes > /dev/null
+          test -f /tmp/game/.claude/skills/my-own-skill/SKILL.md
+          test -f /tmp/game/design/pitch.md
+          test ! -d /tmp/game/.unity-skillforge
+          echo "ok: foreign skill and design/ survived, pack files removed"
+
+  slicer:
+    name: slice-spritesheet
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Grid maths and Unity origin flip
+        run: |
+          python3 - <<'PY'
+          import struct, zlib, os
+          w, h = 128, 64
+          raw = b"".join(b"\x00" + bytes([0, 0, 0, 255] * w) for _ in range(h))
+          def chunk(t, d):
+              c = t + d
+              return struct.pack(">I", len(d)) + c + struct.pack(">I", zlib.crc32(c) & 0xffffffff)
+          png = (b"\x89PNG\r\n\x1a\n"
+                 + chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 6, 0, 0, 0))
+                 + chunk(b"IDAT", zlib.compress(raw))
+                 + chunk(b"IEND", b""))
+          os.makedirs("/tmp/Assets/Art", exist_ok=True)
+          open("/tmp/Assets/Art/Player_sheet.png", "wb").write(png)
+          PY
+          OUT=$(python3 scripts/slice-spritesheet.py /tmp/Assets/Art/Player_sheet.png --cell 32x32)
+          echo "$OUT" | python3 -c "
+          import json, sys
+          d = json.load(sys.stdin)
+          assert d['columns'] == 4 and d['rows'] == 2, d
+          assert d['spriteCount'] == 8, d
+          first = d['rects'][0]
+          # Row 0 is the TOP row of the sheet; Unity measures y from the BOTTOM.
+          assert first['y'] == 32, first
+          assert first['name'] == 'Player_sheet_0', first
+          print('ok: 4x2 grid, origin flip correct')
+          "

@@ -44,9 +44,12 @@ run() {
   fi
 }
 
-echo "pack:   $PACK_ROOT"
-echo "target: $TARGET"
-echo "mode:   $MODE$([[ $DRY_RUN == 1 ]] && echo ' (dry run)')"
+# install.sh prints this header itself; printing it again mid-install looks like a bug.
+if [[ -z "${UNITY_SKILLFORGE_QUIET_HEADER:-}" ]]; then
+  echo "pack:   $PACK_ROOT"
+  echo "target: $TARGET"
+  echo "mode:   $MODE$([[ $DRY_RUN == 1 ]] && echo ' (dry run)')"
+fi
 
 for dest in "$TARGET/.claude/skills" "$TARGET/.agents/skills"; do
   run mkdir -p "$dest"

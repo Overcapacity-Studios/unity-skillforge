@@ -4,8 +4,9 @@ How we build Unity games. The game repo's own `design/` folder says *what* to bu
 *how*. Tier 0 = this file (always loaded). Tier 1 = a `SKILL.md` (loaded on trigger). Tier 2 =
 `references/`, `templates/`, `rules/`, `design/` — read by **exact path only**, never speculatively.
 
-Paths below are written as `PACK/...`, which means `.unity-skillforge/...` in a game repo after
-`install.sh`, or this repo's root when working on the pack itself.
+Paths below are written as `PACK/...`, meaning wherever this pack's own files live:
+`.unity-skillforge/...` in a game repo after `install.sh`, the plugin's root directory when
+installed as a plugin, or this repo's root when working on the pack itself.
 
 ## Hard rules
 

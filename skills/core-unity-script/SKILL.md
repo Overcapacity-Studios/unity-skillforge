@@ -7,8 +7,9 @@ metadata:
 
 # Write a Unity script
 
-Paths written as `PACK/` mean `.unity-skillforge/` in a game repo, or this pack's root when working
-on the pack itself.
+Paths written as `PACK/` mean wherever this pack's own files live: `.unity-skillforge/` in a game
+repo (created by `install.sh`), the plugin's root directory when installed as a plugin, or the
+repo root when working on the pack itself.
 
 ## When to use
 

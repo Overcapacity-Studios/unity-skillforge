@@ -5,9 +5,15 @@
 ```bash
 python3 scripts/validate-skills.py    # must exit 0
 claude plugin validate .              # must pass
+shellcheck -S warning scripts/*.sh    # must be clean
 ```
 
-Both run on every change. The validator is stdlib-only so it works on a clean machine.
+CI (`.github/workflows/validate.yml`) runs all three on every push and pull request, plus manifest
+checks, an end-to-end install/uninstall into a scratch repo, and the sprite-slicer's grid maths. The
+validator is stdlib-only so it works on a clean machine.
+
+Shell scripts must run on **bash 3.2**, which is what macOS ships. No `mapfile`, no associative
+arrays, no `${var,,}`.
 
 ## The constraints you cannot change
 

@@ -7,7 +7,9 @@ metadata:
 
 # Unity game router
 
-Paths written as `PACK/` mean `.unity-skillforge/` in a game repo, or this pack's root.
+Paths written as `PACK/` mean wherever this pack's own files live: `.unity-skillforge/` in a game
+repo (created by `install.sh`), the plugin's root directory when installed as a plugin, or the
+repo root when working on the pack itself.
 
 This skill is the **Tier 0 entry point when this pack is installed as a plugin**, because Claude Code
 does not load a plugin's `AGENTS.md` or `CLAUDE.md`. If the pack was installed into a game repo with
