@@ -1,0 +1,30 @@
+{
+  "name": "unity-skillforge",
+  "displayName": "Unity SkillForge",
+  "version": "0.1.0",
+  "description": "Skills, subagents, rules and templates for building Unity 2D, 2.5D and 3D games with the Unity CLI. Complements Unity's official plugin instead of duplicating it.",
+  "author": {
+    "name": "Overcapacity Studios",
+    "url": "https://github.com/Overcapacity-Studios"
+  },
+  "homepage": "https://github.com/Overcapacity-Studios/unity-skillforge",
+  "repository": "https://github.com/Overcapacity-Studios/unity-skillforge",
+  "license": "MIT",
+  "keywords": [
+    "unity",
+    "gamedev",
+    "game-development",
+    "2d",
+    "2.5d",
+    "3d",
+    "isometric",
+    "urp",
+    "input-system",
+    "cinemachine",
+    "game-design",
+    "unity-cli"
+  ],
+  "documentationUrl": "https://github.com/Overcapacity-Studios/unity-skillforge#readme",
+  "supportUrl": "https://github.com/Overcapacity-Studios/unity-skillforge/issues",
+  "icon": "./.claude-plugin/icon.png"
+}

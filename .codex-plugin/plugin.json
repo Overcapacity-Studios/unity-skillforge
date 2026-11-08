@@ -1,0 +1,43 @@
+{
+  "name": "unity-skillforge",
+  "version": "0.1.0",
+  "description": "Skills for building Unity 2D, 2.5D and 3D games with the Unity CLI, plus the design-document workflow they depend on.",
+  "author": {
+    "name": "Overcapacity Studios",
+    "url": "https://github.com/Overcapacity-Studios"
+  },
+  "homepage": "https://github.com/Overcapacity-Studios/unity-skillforge",
+  "repository": "https://github.com/Overcapacity-Studios/unity-skillforge",
+  "license": "MIT",
+  "keywords": [
+    "unity",
+    "gamedev",
+    "game-development",
+    "2d",
+    "2.5d",
+    "3d",
+    "urp",
+    "unity-cli"
+  ],
+  "skills": "./skills/",
+  "requires_local_executor": true,
+  "interface": {
+    "displayName": "Unity SkillForge",
+    "shortDescription": "Build Unity 2D, 2.5D and 3D games",
+    "longDescription": "Design-first Unity game development: write the design docs, build core architecture, then the 2D, 2.5D or 3D skills for your project, with generated-asset pipelines and a QA loop driven by the Unity CLI.",
+    "developerName": "Overcapacity Studios",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/Overcapacity-Studios/unity-skillforge",
+    "supportURL": "https://github.com/Overcapacity-Studios/unity-skillforge/issues",
+    "defaultPrompt": [
+      "Turn this pitch into a Unity game design: a 2D platformer about a courier in a storm.",
+      "Set up an isometric 2.5D camera and fix my sprite sorting.",
+      "Add a dash mechanic to my 3D character controller and verify it in play mode."
+    ]
+  }
+}

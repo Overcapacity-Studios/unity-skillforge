@@ -1,0 +1,20 @@
+{
+  "name": "unity-skillforge",
+  "interface": {
+    "displayName": "Unity SkillForge"
+  },
+  "plugins": [
+    {
+      "name": "unity-skillforge",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_USE"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "unity-skillforge",
+  "description": "Agent skills for building Unity games in 2D, 2.5D and 3D.",
+  "owner": {
+    "name": "Overcapacity Studios",
+    "url": "https://github.com/Overcapacity-Studios"
+  },
+  "plugins": [
+    {
+      "name": "unity-skillforge",
+      "source": "./",
+      "description": "Build Unity 2D, 2.5D and 3D games: design docs, core architecture, dimension-specific skills, generated-asset pipelines, and a QA loop driven by the Unity CLI.",
+      "category": "Developer Tools"
+    }
+  ]
+}
