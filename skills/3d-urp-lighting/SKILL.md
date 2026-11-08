@@ -103,7 +103,7 @@ Baking is long-running Editor work: start it through the tools `unity list` repo
 | Colour space, tiers, cascades, volumes | `PACK/references/urp-settings.md` |
 | Official post-processing and migration skills | `PACK/references/official-unity-skills.md` |
 | Shadow and static-flag budgets | `PACK/rules/performance.md` |
-| 2D lighting instead (pure 2D only) | `PACK/skills/2d-lighting/SKILL.md` |
+| 2D lighting instead (pure 2D only) | the `2d-lighting` skill |
 
 ## Done checklist
 

@@ -120,6 +120,18 @@ def check_relative_links(path: str, text: str) -> None:
             fail(os.path.relpath(path, ROOT), f"broken relative link: {target}")
 
 
+def check_no_skill_paths(where: str, text: str) -> None:
+    """A sibling skill is invoked by NAME, never read from disk.
+
+    install.sh does not place skills/ under .unity-skillforge/, so a
+    `PACK/skills/...` citation resolves in this repo and dangles in an
+    installed game repo. Naming the skill is both correct and portable.
+    """
+    for match in re.findall(r"PACK/skills/([a-z0-9<][^`\s)]*)", text):
+        fail(where, f"references a sibling skill by path (PACK/skills/{match}); "
+                    "invoke it by name instead — skills/ is not installed under PACK/")
+
+
 def routing_table(text: str) -> set[str]:
     """Skill names in a markdown table's final column, written in backticks."""
     return set(re.findall(r"\|\s*`([a-z0-9][a-z0-9-]*)`\s*\|?\s*$", text, re.M))
@@ -185,6 +197,7 @@ def validate_skills() -> set[str]:
         for cited in cited_pack_paths(text):
             if not os.path.exists(os.path.join(ROOT, cited)):
                 fail(rel, f"cited path does not exist: PACK/{cited}")
+        check_no_skill_paths(rel, text)
         check_relative_links(skill_md, text)
     return names
 
@@ -225,6 +238,7 @@ def validate_agents() -> None:
             bare = cited.rstrip("/")
             if not os.path.exists(os.path.join(ROOT, bare)):
                 fail(rel, f"cited path does not exist: PACK/{cited}")
+        check_no_skill_paths(rel, text)
         check_relative_links(os.path.join(agents_dir, entry), text)
 
 

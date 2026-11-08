@@ -33,7 +33,7 @@ Paths below are written as `PACK/...`, which means `.unity-skillforge/...` in a 
 
 ## Routing table — for X → read Y
 
-Each entry is a skill directory: `PACK/skills/<name>/SKILL.md`.
+Load a skill by name. Each lives at `skills/<name>/SKILL.md` in the pack.
 
 | When the task is | Use skill |
 | --- | --- |

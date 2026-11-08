@@ -93,7 +93,7 @@ Editor script run with `eval_file`. Use fully-qualified names such as
 | Renderer choice, tiers, volumes, colour space | `PACK/references/urp-settings.md` |
 | Recorded renderer decision | `design/tech-decisions.md` |
 | Shadow and overdraw budgets | `PACK/rules/performance.md` |
-| 3D or 2.5D lighting instead | `PACK/skills/3d-urp-lighting/SKILL.md` |
+| 3D or 2.5D lighting instead | the `3d-urp-lighting` skill |
 
 ## Done checklist
 

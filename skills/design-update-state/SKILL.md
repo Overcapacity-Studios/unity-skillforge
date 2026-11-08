@@ -70,8 +70,8 @@ Do not record a status you did not verify. See `PACK/references/unity-cli.md`.
 | The index being updated | `design/INDEX.md` |
 | Decision log, for new constraints | `design/tech-decisions.md` |
 | Mechanic whose status changed | `design/mechanic-*.md` |
-| Verification standard for "playable" | `PACK/skills/qa-playmode-check/SKILL.md` |
-| Fix for too many in-progress items | `PACK/skills/design-scope-cut/SKILL.md` |
+| Verification standard for "playable" | the `qa-playmode-check` skill |
+| Fix for too many in-progress items | the `design-scope-cut` skill |
 
 ## Done checklist
 

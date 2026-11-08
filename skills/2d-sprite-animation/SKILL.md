@@ -85,7 +85,7 @@ Editor script run with `eval_file`. Use fully-qualified names such as
 | Animation folder layout and naming | `PACK/rules/folder-conventions.md` |
 | No per-frame string allocation | `PACK/rules/performance.md` |
 | State machine template | `PACK/templates/csharp/StateMachine.cs.txt` |
-| Sorting conventions | `PACK/skills/25d-sorting-and-depth/SKILL.md` |
+| Sorting conventions | the `25d-sorting-and-depth` skill |
 
 ## Done checklist
 

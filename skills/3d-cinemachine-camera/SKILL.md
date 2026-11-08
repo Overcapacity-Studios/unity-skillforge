@@ -104,8 +104,8 @@ Camera rig setup is Editor work: use the tools `unity list` reports, or an Edito
 | Cinemachine version pin | `design/tech-decisions.md` |
 | Official camera-rig recipes | `PACK/references/official-unity-skills.md` |
 | Package pins and Cinemachine 3.x note | `PACK/references/unity-versions.md` |
-| 2.5D fixed-angle constraint | `PACK/skills/25d-ortho-3d-camera/SKILL.md` |
-| Follow target source | `PACK/skills/3d-character-controller/SKILL.md` |
+| 2.5D fixed-angle constraint | the `25d-ortho-3d-camera` skill |
+| Follow target source | the `3d-character-controller` skill |
 
 ## Done checklist
 

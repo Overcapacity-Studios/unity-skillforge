@@ -99,7 +99,7 @@ Import settings are applied by `assets-import-pipeline`. See `PACK/references/un
 | Exact Meshy tool names and working rules | `PACK/references/meshy-mcp-tools.md` |
 | Provider licensing caveats | `PACK/docs/ASSETS.md` |
 | Where generated masters live | `PACK/rules/folder-conventions.md` |
-| Import settings owner | `PACK/skills/assets-import-pipeline/SKILL.md` |
+| Import settings owner | the `assets-import-pipeline` skill |
 | Poly and LOD budgets | `PACK/rules/performance.md` |
 
 ## Done checklist

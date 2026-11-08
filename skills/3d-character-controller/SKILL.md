@@ -104,7 +104,7 @@ Editor rather than asserting it from the formula.
 | State machine template | `PACK/templates/csharp/StateMachine.cs.txt` |
 | Component template | `PACK/templates/csharp/MonoBehaviour.cs.txt` |
 | Input conventions | `PACK/references/input-system.md` |
-| Camera rig | `PACK/skills/3d-cinemachine-camera/SKILL.md` |
+| Camera rig | the `3d-cinemachine-camera` skill |
 | Non-alloc queries, per-frame budget | `PACK/rules/performance.md` |
 | Style rules | `PACK/rules/csharp-style.md` |
 

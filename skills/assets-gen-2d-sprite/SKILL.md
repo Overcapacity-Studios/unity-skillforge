@@ -91,9 +91,9 @@ See `PACK/references/unity-cli.md`.
 | Style prompt, palette, 2D specs, provenance | `design/art-bible.md` |
 | Provider licensing caveats | `PACK/docs/ASSETS.md` |
 | Where generated masters live | `PACK/rules/folder-conventions.md` |
-| Import settings owner | `PACK/skills/2d-sprite-import/SKILL.md` |
+| Import settings owner | the `2d-sprite-import` skill |
 | Slicing helper | `PACK/scripts/slice-spritesheet.py` |
-| Animation next step | `PACK/skills/2d-sprite-animation/SKILL.md` |
+| Animation next step | the `2d-sprite-animation` skill |
 
 ## Done checklist
 

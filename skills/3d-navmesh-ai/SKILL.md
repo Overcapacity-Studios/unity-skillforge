@@ -96,7 +96,7 @@ consider `unity job` for detached jobs. Use fully-qualified names such as
 | Package pins | `PACK/references/unity-versions.md` |
 | State machine template | `PACK/templates/csharp/StateMachine.cs.txt` |
 | Per-frame cost rules | `PACK/rules/performance.md` |
-| Character capsule dimensions | `PACK/skills/3d-character-controller/SKILL.md` |
+| Character capsule dimensions | the `3d-character-controller` skill |
 
 ## Done checklist
 

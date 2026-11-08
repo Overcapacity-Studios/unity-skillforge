@@ -83,8 +83,8 @@ See `PACK/references/unity-cli.md` and `PACK/references/unity-versions.md`.
 | | `PACK/templates/game-design/pitch.md` |
 | Unity and package pins to record | `PACK/references/unity-versions.md` |
 | Routing table, to know what skills exist | `PACK/AGENTS.md` |
-| Next gate for art | `PACK/skills/assets-art-style-lock/SKILL.md` |
-| Per-mechanic specs, later | `PACK/skills/design-mechanic-spec/SKILL.md` |
+| Next gate for art | the `assets-art-style-lock` skill |
+| Per-mechanic specs, later | the `design-mechanic-spec` skill |
 
 ## Done checklist
 

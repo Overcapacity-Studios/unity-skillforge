@@ -80,8 +80,8 @@ See `PACK/references/unity-cli.md`.
 | Template to copy | `PACK/templates/game-design/mechanic.md` |
 | Routing table for the implementing skill | `PACK/AGENTS.md` |
 | Input action conventions | `PACK/references/input-system.md` |
-| Where tuning values will live | `PACK/skills/core-scriptable-object-data/SKILL.md` |
-| Who verifies the acceptance checks | `PACK/skills/qa-playmode-check/SKILL.md` |
+| Where tuning values will live | the `core-scriptable-object-data` skill |
+| Who verifies the acceptance checks | the `qa-playmode-check` skill |
 
 ## Done checklist
 

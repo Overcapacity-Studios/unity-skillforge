@@ -86,8 +86,8 @@ run with `eval_file`. Use fully-qualified names such as `UnityEngine.SpriteRende
 | Design map | `design/INDEX.md` |
 | Pivot, PPU, art angle | `design/art-bible.md` |
 | Recorded camera projection | `design/tech-decisions.md` |
-| Camera setup | `PACK/skills/25d-ortho-3d-camera/SKILL.md` |
-| Draw order against 3D geometry | `PACK/skills/25d-sorting-and-depth/SKILL.md` |
+| Camera setup | the `25d-ortho-3d-camera` skill |
+| Draw order against 3D geometry | the `25d-sorting-and-depth` skill |
 | Materials, alpha, URP Lit | `PACK/references/urp-settings.md` |
 | Per-frame cost rules | `PACK/rules/performance.md` |
 

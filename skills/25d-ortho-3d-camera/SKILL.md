@@ -88,8 +88,8 @@ with `eval_file`. `script eval` compiles a statement block — fully-qualified n
 | PPU, art angle, resolution | `design/art-bible.md` |
 | Recorded projection and renderer decision | `design/tech-decisions.md` |
 | Renderer, tiers, clip and volume settings | `PACK/references/urp-settings.md` |
-| Sorting consequences | `PACK/skills/25d-sorting-and-depth/SKILL.md` |
-| Camera rig motion | `PACK/skills/3d-cinemachine-camera/SKILL.md` |
+| Sorting consequences | the `25d-sorting-and-depth` skill |
+| Camera rig motion | the `3d-cinemachine-camera` skill |
 | Frame budget | `PACK/rules/performance.md` |
 
 ## Done checklist

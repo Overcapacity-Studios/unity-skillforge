@@ -96,9 +96,9 @@ list` reports, or an Editor script run with `eval_file`. Use fully-qualified nam
 | Project dimension | `design/STATE.md` |
 | Design map | `design/INDEX.md` |
 | Camera angle and projection | `design/tech-decisions.md` |
-| Camera and clip planes | `PACK/skills/25d-ortho-3d-camera/SKILL.md` |
-| Making sprites depth-writing | `PACK/skills/25d-billboard-sprites/SKILL.md` |
-| Tilemap layer stack | `PACK/skills/2d-tilemap-level/SKILL.md` |
+| Camera and clip planes | the `25d-ortho-3d-camera` skill |
+| Making sprites depth-writing | the `25d-billboard-sprites` skill |
+| Tilemap layer stack | the `2d-tilemap-level` skill |
 | Render queues, materials, alpha | `PACK/references/urp-settings.md` |
 | Overdraw and transparency cost | `PACK/rules/performance.md` |
 

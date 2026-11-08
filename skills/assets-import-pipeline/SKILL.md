@@ -96,7 +96,7 @@ See `PACK/references/unity-cli.md`.
 | Model and art folder layout | `PACK/rules/folder-conventions.md` |
 | URP material types and colour space | `PACK/references/urp-settings.md` |
 | Batching, LOD and memory rules | `PACK/rules/performance.md` |
-| Where the model came from | `PACK/skills/assets-gen-3d-model/SKILL.md` |
+| Where the model came from | the `assets-gen-3d-model` skill |
 | Provider licensing caveats | `PACK/docs/ASSETS.md` |
 
 ## Done checklist

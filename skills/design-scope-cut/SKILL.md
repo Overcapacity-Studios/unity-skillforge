@@ -70,7 +70,7 @@ None. This skill edits design documents only and does not touch the Unity Editor
 | Mechanic list and out-of-scope log | `design/INDEX.md` |
 | Pillars and minimum playable | `design/pitch.md` |
 | Specs for items being judged | `design/mechanic-*.md` (only the relevant ones) |
-| Where to record the new state | `PACK/skills/design-update-state/SKILL.md` |
+| Where to record the new state | the `design-update-state` skill |
 
 ## Done checklist
 

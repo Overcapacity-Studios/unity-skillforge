@@ -43,7 +43,7 @@ You do not run implementation, asset or build skills.
 | Folder layout | `PACK/rules/folder-conventions.md` |
 | Performance budgets | `PACK/rules/performance.md` |
 | Version and package pins | `PACK/references/unity-versions.md` |
-| The skill the implementer should have followed | `PACK/skills/<name>/SKILL.md` |
+| The skill the implementer should have followed | that skill, invoked by name |
 | The change itself | the changed files, via `git diff` |
 
 ## Review checklist, in order of severity
