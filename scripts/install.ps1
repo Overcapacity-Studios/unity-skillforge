@@ -108,7 +108,17 @@ Write-Host ""
 $PackDir = Join-Path $Target '.unity-skillforge'
 Write-Host "Tier 2 (read by path) -> $PackDir"
 New-Dir $PackDir
-foreach ($dir in @('references', 'rules', 'templates', 'scripts', 'docs', 'agents')) {
+# references/, rules/, templates/ and the skill-support scripts live inside the
+# companion data skill so that `npx skills add` carries them.
+$DataSkill = Join-Path $PackRoot 'skills\unity-skillforge-pack'
+foreach ($dir in @('references', 'rules', 'templates', 'scripts')) {
+  $source = Join-Path $DataSkill $dir
+  if (Test-Path -LiteralPath $source) {
+    Copy-Entry $source (Join-Path $PackDir $dir) $true
+    Write-Host "  $dir"
+  }
+}
+foreach ($dir in @('docs', 'agents')) {
   $source = Join-Path $PackRoot $dir
   if (Test-Path -LiteralPath $source) {
     Copy-Entry $source (Join-Path $PackDir $dir) $true

@@ -7,9 +7,9 @@ metadata:
 
 # Generate 3D models
 
-Paths written as `PACK/` mean wherever this pack's own files live: `.unity-skillforge/` in a game
-repo (created by `install.sh`), the plugin's root directory when installed as a plugin, or the
-repo root when working on the pack itself.
+Paths written as `PACK/` mean wherever this pack's shared files live: `.unity-skillforge/` in a
+game repo (`install.sh`), the sibling `unity-skillforge-pack` folder (`npx skills add`), the
+plugin's root directory (plugin install), or `skills/unity-skillforge-pack/` in this repo.
 
 ## When to use
 
@@ -77,7 +77,7 @@ naming a provider you cannot reach.
     them. A raw download dropped into `Assets/` is not a finished asset.
 11. Add a row to the art bible's **Licensing and provenance** table: asset, provider, licence,
     commercial use confirmed, date. Commercial rights depend on the user's Meshy plan, so confirm
-    rather than assume — see `PACK/docs/ASSETS.md`. Then `design-update-state`.
+    rather than assume — see `PACK/references/asset-licensing.md`. Then `design-update-state`.
 
 ## Unity CLI commands used
 
@@ -99,7 +99,7 @@ Import settings are applied by `assets-import-pipeline`. See `PACK/references/un
 | Design map | `design/INDEX.md` |
 | Style prompt, 3D specs, provenance | `design/art-bible.md` |
 | Exact Meshy tool names and working rules | `PACK/references/meshy-mcp-tools.md` |
-| Provider licensing caveats | `PACK/docs/ASSETS.md` |
+| Provider licensing caveats | `PACK/references/asset-licensing.md` |
 | Where generated masters live | `PACK/rules/folder-conventions.md` |
 | Import settings owner | the `assets-import-pipeline` skill |
 | Poly and LOD budgets | `PACK/rules/performance.md` |

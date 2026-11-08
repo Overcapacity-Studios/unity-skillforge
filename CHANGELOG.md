@@ -75,6 +75,19 @@ not loaded (the `CLAUDE.md` half is documented; the `AGENTS.md` half is an assum
 frontmatter keys are a hard error, and that the angle-bracket rule comes from Anthropic rather than
 from Unity's CI. All are corrected or hedged to match the evidence.
 
+### Installable with `npx skills`
+
+`npx skills add Overcapacity-Studios/unity-skillforge --all` installs the pack for Claude Code,
+Codex and the other agents the [`skills` CLI](https://github.com/vercel-labs/skills) supports, and
+`-s <name>` takes individual skills.
+
+That CLI installs a skill by copying its own folder and nothing else, so the shared `references/`,
+`rules/` and `templates/` tree moved from the repo root into `skills/unity-skillforge-pack/` — a
+package that carries data and no procedure. It installs as a sibling of the skills that cite it, so
+`PACK/...` resolves on every route. Bundling a copy into each skill instead was rejected on the
+numbers: `references/unity-cli.md` alone is cited by 32 of 34 skills, which would have turned 70 KB
+into roughly 700 KB and made every correction a 32-place edit.
+
 ### Not yet verified
 
 No part of this release has been executed against a running Unity Editor. Every `unity` command,

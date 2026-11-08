@@ -101,13 +101,33 @@ install.sh path, which is the one Codex users depend on.
 ## Why `PACK/` and `.unity-skillforge/`
 
 Skills cite Tier 2 files as `` `PACK/references/unity-cli.md` ``. `PACK/` resolves to whichever
-copy of the pack's files is present:
+copy of the shared files is present:
 
-- `.unity-skillforge/` in a game repo, created by `install.sh`;
-- the **plugin's own root directory**, when installed as a Claude Code or Codex plugin — the plugin
-  ships `references/`, `rules/`, `templates/` and `scripts/` alongside `skills/`, so the same
-  relative paths resolve there (`${CLAUDE_PLUGIN_ROOT}` names it on Claude Code);
-- the repo root, when working on the pack itself.
+| Install method | `PACK/` is |
+| --- | --- |
+| `scripts/install.sh` | `.unity-skillforge/` in the game repo |
+| `npx skills add` | the sibling folder `unity-skillforge-pack/`, beside the other skills |
+| Claude Code / Codex plugin | the plugin's own root (`${CLAUDE_PLUGIN_ROOT}` on Claude Code) |
+| Working on the pack | `skills/unity-skillforge-pack/` |
+
+### Why the shared tree is itself a skill
+
+`references/`, `rules/` and `templates/` live in `skills/unity-skillforge-pack/`, a package that
+carries data and no procedure.
+
+The reason is `npx skills add`, which installs a skill by copying **that skill's own folder and
+nothing else**. A shared tree at the repo root would never travel with it, so every skill installed
+that way would have its `PACK/` paths dangling — 27 distinct ones. Shaping the tree as a skill means
+it installs as a sibling of the skills that cite it, and a sibling path resolves on every route.
+
+The alternative — giving each skill its own copy of what it cites, as Unity's official skills do —
+was rejected on the numbers: `references/unity-cli.md` alone is cited by 32 of the 34 skills, so
+bundling would turn 70 KB into about 700 KB and 24 files into roughly 155 copies, and a single
+correction would then need applying in 32 places.
+
+The data skill is exempt from two rules the validator applies to the rest: it has no procedure, so
+it carries none of the seven required sections, and it is not a task, so it has no routing-table
+row. Both exemptions are explicit in `validate-skills.py`.
 
 Claude Code offers `${CLAUDE_SKILL_DIR}` and `${CLAUDE_PLUGIN_ROOT}` for this. **Codex documents no
 equivalent.** A fixed, boring path is the only mechanism that works in both tools, so the installer
@@ -161,14 +181,16 @@ rejects `allowed-tools` — which is a *skill* key, not an agent key.
 ```
 AGENTS.md              Tier 0: hard rules + routing table (≤150 lines)
 CLAUDE.md              only "@AGENTS.md"
-skills/<name>/SKILL.md 33 skills, flat, prefix-grouped
+skills/<name>/SKILL.md 33 task skills, flat, prefix-grouped
+skills/unity-skillforge-pack/
+                       the shared Tier 2 data, shaped as a skill so `npx skills` carries it
+    references/        Unity CLI, versions, official skills, URP, input, Meshy, MCP, asset licensing
+    rules/             C# style, architecture, folders, performance
+    templates/csharp/  copy-ready .cs.txt
+    templates/game-design/  the design/ contract
+    scripts/           slice-spritesheet.py (the one script a skill invokes)
 agents/*.md            6 subagents (Claude Code; Codex uses docs/CODEX.md)
-rules/                 Tier 2: C# style, architecture, folders, performance
-references/            Tier 2: Unity CLI, versions, official skills, URP, input, Meshy, MCP
-templates/csharp/      copy-ready .cs.txt
-templates/game-design/ the design/ contract
-scripts/               validate-skills.py, install.sh/.ps1, uninstall.sh, sync-agents-dir.sh,
-                       slice-spritesheet.py
+scripts/               validate-skills.py, install.sh/.ps1, uninstall.sh, sync-agents-dir.sh
 .claude-plugin/        plugin.json + marketplace.json (repo is both)
 .codex-plugin/         plugin.json
 .agents/plugins/       marketplace.json (Codex)

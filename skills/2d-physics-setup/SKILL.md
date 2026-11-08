@@ -7,9 +7,9 @@ metadata:
 
 # 2D physics setup
 
-Paths written as `PACK/` mean wherever this pack's own files live: `.unity-skillforge/` in a game
-repo (created by `install.sh`), the plugin's root directory when installed as a plugin, or the
-repo root when working on the pack itself.
+Paths written as `PACK/` mean wherever this pack's shared files live: `.unity-skillforge/` in a
+game repo (`install.sh`), the sibling `unity-skillforge-pack` folder (`npx skills add`), the
+plugin's root directory (plugin install), or `skills/unity-skillforge-pack/` in this repo.
 
 ## When to use
 

@@ -7,9 +7,9 @@ metadata:
 
 # Art style lock
 
-Paths written as `PACK/` mean wherever this pack's own files live: `.unity-skillforge/` in a game
-repo (created by `install.sh`), the plugin's root directory when installed as a plugin, or the
-repo root when working on the pack itself.
+Paths written as `PACK/` mean wherever this pack's shared files live: `.unity-skillforge/` in a
+game repo (`install.sh`), the sibling `unity-skillforge-pack` folder (`npx skills add`), the
+plugin's root directory (plugin install), or `skills/unity-skillforge-pack/` in this repo.
 
 ## When to use
 
@@ -85,7 +85,7 @@ See `PACK/references/unity-cli.md`.
 | Template to copy | `PACK/templates/game-design/art-bible.md` |
 | Where reference images go | `PACK/rules/folder-conventions.md` |
 | Colour space and material types | `PACK/references/urp-settings.md` |
-| Provider licensing caveats | `PACK/docs/ASSETS.md` |
+| Provider licensing caveats | `PACK/references/asset-licensing.md` |
 
 ## Done checklist
 

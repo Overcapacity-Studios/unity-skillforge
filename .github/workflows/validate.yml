@@ -159,6 +159,43 @@ jobs:
           test ! -d /tmp/game/.unity-skillforge
           echo "ok: foreign skill and design/ survived, pack files removed"
 
+  npx-skills:
+    name: npx skills install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # `npx skills add` copies each skill's own folder and nothing else, so the
+      # shared Tier 2 tree has to travel as the unity-skillforge-pack skill. If that
+      # ever regresses, every PACK/ path in every other skill dangles silently.
+      - name: Install the whole pack and resolve every PACK reference as a sibling
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/npx-game && cd /tmp/npx-game && git init -q .
+          npx -y skills@1.7.6 add "$GITHUB_WORKSPACE" -s '*' -a claude-code -y --copy
+          test -d .claude/skills/unity-skillforge-pack
+          python3 - <<'PY'
+          import os, re
+          base, miss, checked = ".claude/skills", set(), 0
+          pack = os.path.join(base, "unity-skillforge-pack")
+          for name in os.listdir(base):
+              path = os.path.join(base, name, "SKILL.md")
+              if not os.path.isfile(path):
+                  continue
+              for cited in re.findall(r"`PACK/([^`\s]+)`", open(path, encoding="utf-8").read()):
+                  if any(c in cited for c in "<>*") or "..." in cited:
+                      continue
+                  checked += 1
+                  if not os.path.exists(os.path.join(pack, cited.rstrip("/"))):
+                      miss.add(cited)
+          if miss:
+              raise SystemExit(f"{len(miss)} PACK path(s) dangle on an npx install: {sorted(miss)}")
+          print(f"ok: {checked} PACK references resolve against the sibling data skill")
+          PY
+
   slicer:
     name: slice-spritesheet
     runs-on: ubuntu-latest
@@ -183,7 +220,7 @@ jobs:
           os.makedirs("/tmp/Assets/Art", exist_ok=True)
           open("/tmp/Assets/Art/Player_sheet.png", "wb").write(png)
           PY
-          OUT=$(python3 scripts/slice-spritesheet.py /tmp/Assets/Art/Player_sheet.png --cell 32x32)
+          OUT=$(python3 skills/unity-skillforge-pack/scripts/slice-spritesheet.py /tmp/Assets/Art/Player_sheet.png --cell 32x32)
           echo "$OUT" | python3 -c "
           import json, sys
           d = json.load(sys.stdin)

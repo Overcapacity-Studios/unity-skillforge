@@ -7,9 +7,9 @@ metadata:
 
 # Import pipeline
 
-Paths written as `PACK/` mean wherever this pack's own files live: `.unity-skillforge/` in a game
-repo (created by `install.sh`), the plugin's root directory when installed as a plugin, or the
-repo root when working on the pack itself.
+Paths written as `PACK/` mean wherever this pack's shared files live: `.unity-skillforge/` in a
+game repo (`install.sh`), the sibling `unity-skillforge-pack` folder (`npx skills add`), the
+plugin's root directory (plugin install), or `skills/unity-skillforge-pack/` in this repo.
 
 ## When to use
 
@@ -99,7 +99,7 @@ See `PACK/references/unity-cli.md`.
 | URP material types and colour space | `PACK/references/urp-settings.md` |
 | Batching, LOD and memory rules | `PACK/rules/performance.md` |
 | Where the model came from | the `assets-gen-3d-model` skill |
-| Provider licensing caveats | `PACK/docs/ASSETS.md` |
+| Provider licensing caveats | `PACK/references/asset-licensing.md` |
 
 ## Done checklist
 

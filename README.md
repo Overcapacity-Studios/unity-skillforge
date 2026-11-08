@@ -63,9 +63,23 @@ unity status               # should list your Editor. If it does, you are connec
 The Unity CLI is currently **beta** (`1.0.0-beta.x`) and Unity labels it experimental;
 `unity --help` is authoritative for your installed version.
 
-**Step 2 — install the pack.** Choose by which agent you use:
+**Step 2 — install the pack.** Any one of these.
 
-Works for Claude Code **and** Codex, and loads the rules automatically. Recommended.
+**`npx skills`** — quickest, and the way to cherry-pick:
+
+```bash
+npx skills add Overcapacity-Studios/unity-skillforge --all          # everything
+npx skills add Overcapacity-Studios/unity-skillforge -l             # just list what is in it
+npx skills add Overcapacity-Studios/unity-skillforge \
+  -s 25d-sorting-and-depth -s unity-game-router -a claude-code      # pick skills and agents
+```
+
+Installs to `.claude/skills/` and `.agents/skills/` and writes a `skills-lock.json`. Repeat `-a`
+and `-s` rather than comma-joining them. Always include **`unity-skillforge-pack`** (or use
+`--all`): it carries the rules, references and templates every other skill reads, and without it
+those references dangle.
+
+**Installer** — the full pack, including the always-loaded rules and the `design/` contract:
 
 ```bash
 # macOS / Linux. Skip the clone if you already have this folder.
@@ -75,12 +89,12 @@ cd unity-skillforge
 ```
 
 ```powershell
-# Windows PowerShell, from the same folder. Note the switch syntax: -DryRun, not --dry-run.
+# Windows PowerShell, from the same folder. Switch syntax: -DryRun, not --dry-run.
 .\scripts\install.ps1 C:\dev\MyGame
 ```
 
 <details>
-<summary>Claude Code plugin instead (once the repo is published)</summary>
+<summary>Claude Code plugin</summary>
 
 ```
 /plugin install unity-skillforge --marketplace Overcapacity-Studios/unity-skillforge
@@ -89,11 +103,12 @@ cd unity-skillforge
 On Claude Code older than 2.1.275:
 `/plugin marketplace add Overcapacity-Studios/unity-skillforge` then
 `/plugin install unity-skillforge@unity-skillforge`.
-
-The plugin ships the skills but **not** the always-on rules file, because Claude Code does not load
-a plugin's `AGENTS.md`. Open each session with *"Use the unity-game-router skill"*, or run
-`./scripts/install.sh` as well to get both.
 </details>
+
+**Which one?** The installer is the only route that also gives you the always-on rules
+(`AGENTS.md`) and creates `design/STATE.md`. With `npx skills` or the plugin, open each session
+with *"Use the unity-game-router skill"*, which carries the same rules. Running more than one is
+fine.
 
 **Step 3 — your first prompt.** Literally type this:
 
@@ -184,7 +199,7 @@ Unity ships [`Unity-Technologies/unity-agent-plugin`](https://github.com/Unity-T
 
 Where topics overlap, our skill contributes this project's conventions and defers to the `/unity:*`
 skill by name rather than restating its procedure. The full map is in
-[references/official-unity-skills.md](references/official-unity-skills.md), which also lists other
+[references/official-unity-skills.md](skills/unity-skillforge-pack/references/official-unity-skills.md), which also lists other
 complementary packs worth installing.
 
 ## Already have a Unity project?

@@ -51,7 +51,7 @@ Not yours: any `core-*`, `qa-*` or design-authoring skill.
 | Texture, LOD and draw-call budgets | `PACK/rules/performance.md` |
 | Real Meshy tool names and working rules | `PACK/references/meshy-mcp-tools.md` |
 | URP material types and colour space | `PACK/references/urp-settings.md` |
-| Provider licensing caveats | `PACK/docs/ASSETS.md` |
+| Provider licensing caveats | `PACK/references/asset-licensing.md` |
 | Official asset skills | `PACK/references/official-unity-skills.md` |
 
 ## What you write

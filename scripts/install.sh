@@ -61,15 +61,25 @@ echo
 PACK_DIR="$TARGET/.unity-skillforge"
 echo "Tier 2 (read by path) -> $PACK_DIR"
 run mkdir -p "$PACK_DIR"
-for dir in references rules templates scripts agents; do
+# references/, rules/, templates/ and the skill-support scripts live inside the
+# companion data skill so that `npx skills add` carries them; agents/ is at the root.
+DATA_SKILL="$PACK_ROOT/skills/unity-skillforge-pack"
+for dir in references rules templates scripts; do
   if [[ -e "$PACK_DIR/$dir" || -L "$PACK_DIR/$dir" ]]; then run rm -rf "$PACK_DIR/$dir"; fi
   if [[ "$MODE" == "symlink" ]]; then
-    run ln -s "$PACK_ROOT/$dir" "$PACK_DIR/$dir"
+    run ln -s "$DATA_SKILL/$dir" "$PACK_DIR/$dir"
   else
-    run cp -R "$PACK_ROOT/$dir" "$PACK_DIR/$dir"
+    run cp -R "$DATA_SKILL/$dir" "$PACK_DIR/$dir"
   fi
   echo "  $dir"
 done
+if [[ -e "$PACK_DIR/agents" || -L "$PACK_DIR/agents" ]]; then run rm -rf "$PACK_DIR/agents"; fi
+if [[ "$MODE" == "symlink" ]]; then
+  run ln -s "$PACK_ROOT/agents" "$PACK_DIR/agents"
+else
+  run cp -R "$PACK_ROOT/agents" "$PACK_DIR/agents"
+fi
+echo "  agents"
 if [[ -e "$PACK_DIR/AGENTS.md" ]]; then run rm -f "$PACK_DIR/AGENTS.md"; fi
 run cp "$PACK_ROOT/AGENTS.md" "$PACK_DIR/AGENTS.md"
 if [[ -d "$PACK_ROOT/docs" ]]; then

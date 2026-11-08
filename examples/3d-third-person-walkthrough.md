@@ -127,7 +127,7 @@ camera inherits every animation bob.
    rigging costs credits and locks in a skeleton nobody needs.
 6. `meshy_download_model` into `art-source/generated/`, outside `Assets/`.
 
-Exact tool names are in [../references/meshy-mcp-tools.md](../references/meshy-mcp-tools.md). They
+Exact tool names are in [../references/meshy-mcp-tools.md](../skills/unity-skillforge-pack/references/meshy-mcp-tools.md). They
 are snake_case with a `meshy_` prefix; inventing a variant is the usual failure.
 
 ## 8. Import — where raw downloads become assets

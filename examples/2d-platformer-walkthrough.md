@@ -136,7 +136,7 @@ Review against the **reference image**, not the prompt text. Then:
 
 - **`2d-sprite-import`** applies PPU, pivot, filter and compression, and adds the sprites to an atlas.
   Unatlased sprites are one draw call each.
-- `scripts/slice-spritesheet.py --cell 32x32` for a uniform sheet; it handles the top-left to
+- `PACK/scripts/slice-spritesheet.py --cell 32x32` for a uniform sheet; it handles the top-left to
   bottom-left origin flip that otherwise makes animations play out of order.
 - **`2d-sprite-animation`** builds clips at the art bible's frame rate, and an Animator driven by
   **parameters** (`Speed`, `IsGrounded`, `VerticalVelocity`) with transition durations of **0**.

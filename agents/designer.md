@@ -41,7 +41,7 @@ Nothing else. If a task needs implementation, hand off; do not reach for a code 
 | Art style, when scoping art work | `design/art-bible.md` |
 | Recorded technical constraints | `design/tech-decisions.md` |
 | Templates to copy | `PACK/templates/game-design/` |
-| What skills exist | `PACK/AGENTS.md` |
+| What skills exist | the `unity-game-router` skill |
 
 You may **not** read source code. If a design question depends on how something was built, ask the
 architect or the reviewer rather than reading `Assets/`.

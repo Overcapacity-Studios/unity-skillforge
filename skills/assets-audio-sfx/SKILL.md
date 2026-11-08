@@ -7,9 +7,9 @@ metadata:
 
 # Audio and SFX
 
-Paths written as `PACK/` mean wherever this pack's own files live: `.unity-skillforge/` in a game
-repo (created by `install.sh`), the plugin's root directory when installed as a plugin, or the
-repo root when working on the pack itself.
+Paths written as `PACK/` mean wherever this pack's shared files live: `.unity-skillforge/` in a
+game repo (`install.sh`), the sibling `unity-skillforge-pack` folder (`npx skills add`), the
+plugin's root directory (plugin install), or `skills/unity-skillforge-pack/` in this repo.
 
 ## When to use
 
@@ -103,7 +103,7 @@ reports, or an Editor script run with `eval_file`. Use fully-qualified names suc
 | Audio folder layout | `PACK/rules/folder-conventions.md` |
 | Memory and per-frame budgets | `PACK/rules/performance.md` |
 | Service locator template | `PACK/templates/csharp/ServiceLocator.cs.txt` |
-| Provider licensing caveats | `PACK/docs/ASSETS.md` |
+| Provider licensing caveats | `PACK/references/asset-licensing.md` |
 
 ## Done checklist
 

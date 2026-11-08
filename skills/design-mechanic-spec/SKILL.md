@@ -7,9 +7,9 @@ metadata:
 
 # Specify a mechanic
 
-Paths written as `PACK/` mean wherever this pack's own files live: `.unity-skillforge/` in a game
-repo (created by `install.sh`), the plugin's root directory when installed as a plugin, or the
-repo root when working on the pack itself.
+Paths written as `PACK/` mean wherever this pack's shared files live: `.unity-skillforge/` in a
+game repo (`install.sh`), the sibling `unity-skillforge-pack` folder (`npx skills add`), the
+plugin's root directory (plugin install), or `skills/unity-skillforge-pack/` in this repo.
 
 ## When to use
 
@@ -58,7 +58,7 @@ instead of a matter of opinion.
     included.
 12. Keep it **under 80 lines**. If it needs more, it is two mechanics — split it.
 13. Report the spec, flag every number you proposed rather than were given, and only then hand off
-    to the implementing skill from the routing table in `PACK/AGENTS.md`.
+    to the implementing skill named by the `unity-game-router` skill.
 
 ## Unity CLI commands used
 
@@ -80,7 +80,7 @@ See `PACK/references/unity-cli.md`.
 | Design map | `design/INDEX.md` |
 | Pillars this must serve | `design/pitch.md` |
 | Template to copy | `PACK/templates/game-design/mechanic.md` |
-| Routing table for the implementing skill | `PACK/AGENTS.md` |
+| Routing table for the implementing skill | the `unity-game-router` skill |
 | Input action conventions | `PACK/references/input-system.md` |
 | Where tuning values will live | the `core-scriptable-object-data` skill |
 | Who verifies the acceptance checks | the `qa-playmode-check` skill |

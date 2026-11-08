@@ -16,6 +16,12 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# The shared Tier 2 tree lives inside a companion "data skill" rather than at the
+# repo root, so that `npx skills add` — which copies each skill's own folder and
+# nothing else — carries it alongside the skills that cite it.
+DATA_SKILL = "unity-skillforge-pack"
+PACK_ROOT = os.path.join(ROOT, "skills", DATA_SKILL)
+
 # Outside Claude Code (claude.ai uploads, the Skills API) any other frontmatter
 # key is a hard error, so the repo stays loadable everywhere.
 PORTABLE_KEYS = {"name", "description", "license", "compatibility", "metadata", "allowed-tools"}
@@ -226,6 +232,11 @@ def validate_skills() -> set[str]:
                 fail(rel, "description contains angle brackets; avoid them — Unity's plugin CI "
                           "rejects them, and Claude Code escapes them for display")
 
+        if entry == DATA_SKILL:
+            # A data package: no procedure, so no Steps/Done checklist, and no
+            # routing-table row. Everything above (frontmatter, limits) still applies.
+            continue
+
         # Required sections, present and in order.
         positions = []
         for heading in SKILL_SECTIONS:
@@ -238,8 +249,9 @@ def validate_skills() -> set[str]:
             fail(rel, "required sections are out of order: " + " then ".join(h for _, h in positions))
 
         for cited in cited_pack_paths(text):
-            if not os.path.exists(os.path.join(ROOT, cited)):
-                fail(rel, f"cited path does not exist: PACK/{cited}")
+            if not os.path.exists(os.path.join(PACK_ROOT, cited)):
+                fail(rel, f"cited path does not exist: PACK/{cited} "
+                          f"(looked in skills/{DATA_SKILL}/)")
         check_no_skill_paths(rel, text)
         check_relative_links(skill_md, text)
     return names
@@ -279,8 +291,9 @@ def validate_agents() -> None:
 
         for cited in cited_pack_paths(text):
             bare = cited.rstrip("/")
-            if not os.path.exists(os.path.join(ROOT, bare)):
-                fail(rel, f"cited path does not exist: PACK/{cited}")
+            if not os.path.exists(os.path.join(PACK_ROOT, bare)):
+                fail(rel, f"cited path does not exist: PACK/{cited} "
+                          f"(looked in skills/{DATA_SKILL}/)")
         check_no_skill_paths(rel, text)
         check_relative_links(os.path.join(agents_dir, entry), text)
 
@@ -292,12 +305,13 @@ def validate_root(skill_names: set[str]) -> None:
     if line_count > MAX_AGENTS_MD_LINES:
         fail("AGENTS.md", f"{line_count} lines, limit is {MAX_AGENTS_MD_LINES}")
 
+    routable = skill_names - {DATA_SKILL}
     table = routing_table(text)
-    if table != skill_names:
-        fail("AGENTS.md", f"routing table out of sync — missing {sorted(skill_names - table)}, "
-                          f"unknown {sorted(table - skill_names)}")
+    if table != routable:
+        fail("AGENTS.md", f"routing table out of sync — missing {sorted(routable - table)}, "
+                          f"unknown {sorted(table - routable)}")
     for cited in cited_pack_paths(text):
-        if not os.path.exists(os.path.join(ROOT, cited.rstrip("/"))):
+        if not os.path.exists(os.path.join(PACK_ROOT, cited.rstrip("/"))):
             fail("AGENTS.md", f"cited path does not exist: PACK/{cited}")
     check_relative_links(agents_md, text)
 
@@ -310,7 +324,7 @@ def validate_root(skill_names: set[str]) -> None:
     router = os.path.join(ROOT, "skills", "unity-game-router", "SKILL.md")
     if os.path.exists(router):
         router_table = routing_table(open(router, encoding="utf-8").read())
-        expected = skill_names - {"unity-game-router"}
+        expected = skill_names - {"unity-game-router", DATA_SKILL}
         if router_table != expected:
             fail("skills/unity-game-router/SKILL.md",
                  f"routing table out of sync with AGENTS.md — missing {sorted(expected - router_table)}, "
@@ -337,7 +351,7 @@ def validate_root(skill_names: set[str]) -> None:
         rel = os.path.relpath(path, ROOT)
         text = open(path, encoding="utf-8").read()
         for cited in cited_pack_paths(text):
-            if not os.path.exists(os.path.join(ROOT, cited.rstrip("/"))):
+            if not os.path.exists(os.path.join(PACK_ROOT, cited.rstrip("/"))):
                 fail(rel, f"cited path does not exist: PACK/{cited}")
         check_relative_links(path, text)
 

@@ -99,21 +99,24 @@ The Pipeline package exposes a **localhost-only** HTTP API. Nothing is exposed t
 
 ### Which path?
 
-| | Path A — plugin | Path B — installer |
-| --- | --- | --- |
-| Works with | Claude Code only | **Claude Code and Codex** |
-| Ships the 33 skills | yes | yes |
-| Ships the 6 subagents | yes | yes |
-| **Loads the rules automatically** | **no** (see below) | **yes**, via `AGENTS.md` |
-| Creates `design/STATE.md` | no | yes (never overwrites an existing one) |
-| Updates | `/plugin marketplace update` | re-run the script |
+| | Path A — plugin | Path B — installer | Path C — `npx skills` |
+| --- | --- | --- | --- |
+| Works with | Claude Code only | **Claude Code and Codex** | Claude Code, Codex and ~70 other agents |
+| Ships the 33 skills | yes | yes | yes |
+| Ships the shared rules/templates | yes (plugin root) | yes (`.unity-skillforge/`) | yes — **as the `unity-skillforge-pack` skill** |
+| Ships the 6 subagents | yes | yes | no |
+| **Loads the rules automatically** | **no** | **yes**, via `AGENTS.md` | **no** |
+| Creates `design/STATE.md` | no | yes (never overwrites an existing one) | no |
+| Lets you take just one skill | no | no | **yes** |
+| Updates | `/plugin marketplace update` | re-run the script | `npx skills update` |
 
-**Use Path B unless you have a reason not to.** It is the only path that works for Codex, and the
-only one where the rules load without you asking. Path A is a one-line install if you are on Claude
-Code and happy to open each session with *"Use the unity-game-router skill"*.
+**Use Path B unless you have a reason not to.** It is the only route that also gives you the
+always-on rules and the `design/` contract. Use **Path C** when you want a couple of specific
+skills rather than the whole pack, or when your agent is neither Claude Code nor Codex.
 
-Running **both** is fine and is what you want if you like the plugin's update flow but also want
-the rules loaded: install the plugin, then run `./scripts/install.sh` as well.
+On Paths A and C the rules are not loaded automatically, so open each session with **"Use the
+unity-game-router skill"** — it carries the same hard rules and routing table. Running more than one
+path is fine.
 
 ### Path A — Claude Code plugin
 
@@ -254,6 +257,37 @@ tells you what it deliberately left behind, such as the section it appended to y
 > the installer writes it, it costs you nothing, and it is simply unused. Codex-specific setup lives
 > in [CODEX.md](CODEX.md).
 
+### Path C — `npx skills`
+
+Works with any agent the [`skills` CLI](https://github.com/vercel-labs/skills) supports, which is
+most of them.
+
+```bash
+npx skills add Overcapacity-Studios/unity-skillforge -l       # list what is in the repo
+npx skills add Overcapacity-Studios/unity-skillforge --all    # install everything
+```
+
+To pick and choose — note that `-s` and `-a` must be **repeated**, not comma-joined:
+
+```bash
+npx skills add Overcapacity-Studios/unity-skillforge \
+  -s unity-skillforge-pack -s unity-game-router -s 25d-sorting-and-depth \
+  -a claude-code -a codex -y
+```
+
+**Always include `unity-skillforge-pack`**, or use `--all`. The CLI copies each skill's own folder
+and nothing else, so that package is how the shared rules, references and templates travel. Without
+it, every `PACK/...` path in the other skills points at nothing. The skills resolve it as a sibling
+folder next to themselves.
+
+Useful flags: `--copy` to copy rather than symlink, `-g` for a user-level install instead of this
+project, `--json` for machine-readable output. It writes a `skills-lock.json`, and
+`npx skills update` upgrades them later.
+
+What this path does **not** give you: the six subagents, the always-on `AGENTS.md`, or
+`design/STATE.md`. Open each session with *"Use the unity-game-router skill"*, which will create the
+`design/` folder on its first run.
+
 ## 5. Connect your agent to Unity
 
 **Claude Code and Codex can both run shell commands, so no MCP server is needed** — the skills call
@@ -327,7 +361,7 @@ Complementary, not overlapping. Install both.
 
 It ships 36 skills covering tilemaps, sprite atlases, NavMesh, Cinemachine recipes, URP
 post-processing, builds and monetisation. Where our skills touch the same ground they defer to it by
-name. See [../references/official-unity-skills.md](../references/official-unity-skills.md) for the
+name. See [../references/official-unity-skills.md](../skills/unity-skillforge-pack/references/official-unity-skills.md) for the
 full map and other packs worth adding.
 
 ## 8. Optional: working on the pack itself

@@ -72,7 +72,7 @@ unity commands --format json     # the CLI's own command manifest
 
 Every skill here is written to run those first. Names like `Unity.ManageScene` and
 `Unity_ReadConsole` appear only in Unity's docs for the **deprecated** surface — see
-[../references/unity-mcp-tools.md](../references/unity-mcp-tools.md).
+[../references/unity-mcp-tools.md](../skills/unity-skillforge-pack/references/unity-mcp-tools.md).
 
 ---
 
@@ -147,7 +147,7 @@ exist in two places and will disagree.
 | Symptom | Cause |
 | --- | --- |
 | A wall of `CS0246` on camera code | **Cinemachine 2.x API against a 3.x package.** `CinemachineVirtualCamera` became `CinemachineCamera`. Check the pin in `Packages/manifest.json` |
-| 2D physics code compiles, runs, and does nothing | **The two 2D physics systems.** Legacy `Rigidbody2D` and 2D Physics Core (`Unity.U2D.Physics`, Unity 6000.7+) share no code and never interact. See [../references/unity-versions.md](../references/unity-versions.md) |
+| 2D physics code compiles, runs, and does nothing | **The two 2D physics systems.** Legacy `Rigidbody2D` and 2D Physics Core (`Unity.U2D.Physics`, Unity 6000.7+) share no code and never interact. See [../references/unity-versions.md](../skills/unity-skillforge-pack/references/unity-versions.md) |
 | Everything renders magenta | Built-in pipeline materials in a URP project. `assets-import-pipeline` converts them |
 | The scene is black on one quality tier only | That tier's URP Asset is unassigned and silently falls back to Built-in |
 | Lighting looks wrong and retuning does not help | Colour space is Gamma, not Linear |

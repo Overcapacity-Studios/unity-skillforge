@@ -7,9 +7,9 @@ metadata:
 
 # Write the design docs
 
-Paths written as `PACK/` mean wherever this pack's own files live: `.unity-skillforge/` in a game
-repo (created by `install.sh`), the plugin's root directory when installed as a plugin, or the
-repo root when working on the pack itself.
+Paths written as `PACK/` mean wherever this pack's shared files live: `.unity-skillforge/` in a
+game repo (`install.sh`), the sibling `unity-skillforge-pack` folder (`npx skills add`), the
+plugin's root directory (plugin install), or `skills/unity-skillforge-pack/` in this repo.
 
 ## When to use
 
@@ -84,7 +84,7 @@ See `PACK/references/unity-cli.md` and `PACK/references/unity-versions.md`.
 | | `PACK/templates/game-design/INDEX.md` |
 | | `PACK/templates/game-design/pitch.md` |
 | Unity and package pins to record | `PACK/references/unity-versions.md` |
-| Routing table, to know what skills exist | `PACK/AGENTS.md` |
+| Routing table, to know what skills exist | the `unity-game-router` skill |
 | Next gate for art | the `assets-art-style-lock` skill |
 | Per-mechanic specs, later | the `design-mechanic-spec` skill |
 

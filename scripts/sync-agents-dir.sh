@@ -56,6 +56,9 @@ for dest in "$TARGET/.claude/skills" "$TARGET/.agents/skills"; do
   count=0
   for skill_dir in "$PACK_ROOT"/skills/*/; do
     name="$(basename "$skill_dir")"
+    # The shared data package is installed once to .unity-skillforge/ by install.sh,
+    # so it does not also belong in the skills directories.
+    if [[ "$name" == "unity-skillforge-pack" ]]; then continue; fi
     link="$dest/$name"
     # Replace an existing entry so a re-run picks up changes instead of
     # leaving a stale copy that silently disagrees with the pack.

@@ -35,7 +35,7 @@ These come from how Claude Code and Codex actually load files, not from taste:
 ## Adding a skill
 
 1. **Check it is not already covered.** Read
-   [../references/official-unity-skills.md](../references/official-unity-skills.md) first. If
+   [../references/official-unity-skills.md](../skills/unity-skillforge-pack/references/official-unity-skills.md) first. If
    Unity's official plugin or another maintained pack covers the topic well, the right contribution
    is a link, not a skill. Duplicating something Unity maintains means maintaining a copy that
    drifts.
@@ -51,8 +51,11 @@ These come from how Claude Code and Codex actually load files, not from taste:
 4. **Write the description to say when the skill does *and does not* apply.** It sits in context
    permanently, for every user, forever. That is the 300-character budget's whole justification.
 5. **Cite Tier 2 files as `PACK/...`** — `PACK/rules/csharp-style.md`,
-   `PACK/templates/csharp/StateMachine.cs.txt`. The validator checks every one resolves. Paths under
-   `design/`, `Assets/` or `art-source/` belong to a game project and are not checked.
+   `PACK/templates/csharp/StateMachine.cs.txt`. Those files live in
+   `skills/unity-skillforge-pack/`, the shared data package, and the validator resolves every
+   citation against it. Add a new reference or template **there**, never at the repo root, or it
+   will not travel with an `npx skills` install. Paths under `design/`, `Assets/` or `art-source/`
+   belong to a game project and are not checked.
 6. **Add a row to the routing table in both `AGENTS.md` and
    `skills/unity-game-router/SKILL.md`.** The validator fails if they drift.
 7. **Update the counts** in `README.md` and `docs/ARCHITECTURE.md` if the group size changed.
@@ -74,7 +77,8 @@ These come from how Claude Code and Codex actually load files, not from taste:
 
 ## Adding or changing a reference
 
-`references/` holds snapshots of external documentation so skills never reason from memory. Each:
+`skills/unity-skillforge-pack/references/` holds snapshots of external documentation so skills never
+reason from memory. Each:
 
 - **states the date it was captured** and links its primary sources;
 - records **only what the documentation actually says.** If a complete list was never published —

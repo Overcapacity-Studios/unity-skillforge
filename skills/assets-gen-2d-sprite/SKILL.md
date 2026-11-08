@@ -7,9 +7,9 @@ metadata:
 
 # Generate 2D sprites
 
-Paths written as `PACK/` mean wherever this pack's own files live: `.unity-skillforge/` in a game
-repo (created by `install.sh`), the plugin's root directory when installed as a plugin, or the
-repo root when working on the pack itself.
+Paths written as `PACK/` mean wherever this pack's shared files live: `.unity-skillforge/` in a
+game repo (`install.sh`), the sibling `unity-skillforge-pack` folder (`npx skills add`), the
+plugin's root directory (plugin install), or `skills/unity-skillforge-pack/` in this repo.
 
 ## When to use
 
@@ -28,7 +28,7 @@ an unlocked style produces a set that does not match itself and has to be redone
 
 This skill is deliberately **provider-agnostic**: it defines the contract, not the tool. Use
 whichever image model the user has available. Record which one was used, and its licence terms, in
-the art bible's provenance table — see `PACK/docs/ASSETS.md` for per-provider caveats, especially
+the art bible's provenance table — see `PACK/references/asset-licensing.md` for per-provider caveats, especially
 commercial-use rights and whether generated output can be copyrighted.
 
 Never call a generation tool you have not confirmed is available in this session. If no image model
@@ -91,7 +91,7 @@ See `PACK/references/unity-cli.md`.
 | Project status and dimension | `design/STATE.md` |
 | Design map | `design/INDEX.md` |
 | Style prompt, palette, 2D specs, provenance | `design/art-bible.md` |
-| Provider licensing caveats | `PACK/docs/ASSETS.md` |
+| Provider licensing caveats | `PACK/references/asset-licensing.md` |
 | Where generated masters live | `PACK/rules/folder-conventions.md` |
 | Import settings owner | the `2d-sprite-import` skill |
 | Slicing helper | `PACK/scripts/slice-spritesheet.py` |
