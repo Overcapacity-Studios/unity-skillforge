@@ -71,6 +71,18 @@ Both carry the same hard rules and the same routing table. `validate-skills.py` 
 the two tables drift — the router's table is the full set minus itself, since a router does not
 route to itself.
 
+### An expected validator warning
+
+`claude plugin validate . --strict` reports:
+
+> `CLAUDE.md at the plugin root is not loaded as project context.`
+
+That warning is **correct and expected**, and the design already answers it. `CLAUDE.md` exists for
+the `install.sh` path, where the repo's rules are copied into a game repo and Claude Code loads them
+as project context. On the plugin path it is inert, which is precisely why `unity-game-router`
+carries the rules. Do not delete `CLAUDE.md` to silence the warning — that would break the
+install.sh path, which is the one Codex users depend on.
+
 ## Why `PACK/` and `.unity-skillforge/`
 
 Skills cite Tier 2 files as `` `PACK/references/unity-cli.md` ``. `PACK/` resolves to:

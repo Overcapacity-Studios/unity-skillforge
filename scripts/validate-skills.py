@@ -117,7 +117,7 @@ def check_relative_links(path: str, text: str) -> None:
             continue
         resolved = os.path.normpath(os.path.join(os.path.dirname(path), target.split("#")[0]))
         if not os.path.exists(resolved):
-            fail(path, f"broken relative link: {target}")
+            fail(os.path.relpath(path, ROOT), f"broken relative link: {target}")
 
 
 def routing_table(text: str) -> set[str]:
@@ -242,6 +242,7 @@ def validate_root(skill_names: set[str]) -> None:
     for cited in cited_pack_paths(text):
         if not os.path.exists(os.path.join(ROOT, cited.rstrip("/"))):
             fail("AGENTS.md", f"cited path does not exist: PACK/{cited}")
+    check_relative_links(agents_md, text)
 
     claude_md = open(os.path.join(ROOT, "CLAUDE.md"), encoding="utf-8").read().strip()
     if claude_md != "@AGENTS.md":
@@ -266,14 +267,21 @@ def validate_root(skill_names: set[str]) -> None:
         if len(words) < MIN_README_WORDS:
             fail("README.md", f"{len(words)} words, the plugin directory needs at least {MIN_README_WORDS}")
 
-    for doc in sorted(os.listdir(os.path.join(ROOT, "docs"))) if os.path.isdir(os.path.join(ROOT, "docs")) else []:
-        if not doc.endswith(".md"):
+    # Every other markdown file in the repo: links and PACK/ citations must resolve.
+    extra_docs = [os.path.join(ROOT, name) for name in ("README.md", "CHANGELOG.md")]
+    for folder in ("docs", "examples"):
+        folder_path = os.path.join(ROOT, folder)
+        if os.path.isdir(folder_path):
+            extra_docs += [os.path.join(folder_path, f)
+                           for f in sorted(os.listdir(folder_path)) if f.endswith(".md")]
+    for path in extra_docs:
+        if not os.path.exists(path):
             continue
-        path = os.path.join(ROOT, "docs", doc)
+        rel = os.path.relpath(path, ROOT)
         text = open(path, encoding="utf-8").read()
         for cited in cited_pack_paths(text):
             if not os.path.exists(os.path.join(ROOT, cited.rstrip("/"))):
-                fail(f"docs/{doc}", f"cited path does not exist: PACK/{cited}")
+                fail(rel, f"cited path does not exist: PACK/{cited}")
         check_relative_links(path, text)
 
 
